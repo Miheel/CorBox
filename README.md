@@ -24,11 +24,16 @@ main() -> int {
   - [x] array buffer
   - [x] linked list
   - [x] array buffer
+  - [ ] queue fifo/lifo/pq
   - [ ] String
-- [ ] option handeling
+- [ ] algorithms
+    - [ ] sort q_sort 
+    - [ ] search linear/biary/bintree/hashtabel 
+- [ ] option arg handeling
 - [ ] Math
   - [ ] trig
   - [ ] lin alg
+- [ ] image maipulation?
 - [ ] smart ptr
   - [ ] unique
   - [ ] shared
