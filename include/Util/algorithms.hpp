@@ -3,18 +3,6 @@
 
 namespace cor {
 
-	template <typename T>
-	void swap(T& first, T& second) {
-		auto temp = first;
-		first = second;
-		second = temp;
-	}
-
-	template <typename Iter>
-	void iterSwap(Iter first, Iter second) {
-		cor::swap(*first, *second);
-	}
-
 	template<typename InIt, typename OutIt, typename Func>
 	inline OutIt transform(const InIt first, const InIt last, OutIt dest, Func func) {
 		for (auto tempFirst = first; tempFirst != last; tempFirst++, dest++)

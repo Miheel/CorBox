@@ -2,7 +2,7 @@
 #define BUFFER_HPP
 
 #include "memory.hpp"
-#include "algorithms.hpp"
+#include "Util/algorithms.hpp"
 
 namespace cor {
 

@@ -20,6 +20,28 @@ namespace cor {
 		return static_cast<T&&>(t);
 	}
 
+	template<typename T>
+	constexpr void moveSwap(T& first, T& second) noexcept
+	{
+		T temp(isMovable(first));
+		first = isMovable(second);
+		second = isMovable(temp);
+	}
+
+	template <typename T>
+	constexpr void swap(T &first, T &second) noexcept
+    {
+        auto temp = first;
+        first = second;
+        second = temp;
+    }
+
+    template <typename Iter>
+    constexpr void iterSwap(Iter first, Iter second)
+    {
+        cor::moveSwap(*first, *second);
+    }
+
 } // !namespace cor
 
 #endif // !UTILITY_HPP
