@@ -1,7 +1,7 @@
 #ifndef MEMORY_HPP
 #define MEMORY_HPP
 
-#include "utility.hpp"
+#include "Util/utility.hpp"
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -60,6 +60,16 @@ namespace cor::mem {
 			*d_first = *first;
 		}
 	}
+
+	template<class T>
+	struct Deleter
+	{
+		constexpr Deleter() noexcept = default;
+
+		void operator()(T* ptr)const noexcept {
+			delete ptr;
+		}
+	};
 
 	template<typename InContainer, typename OutContainer>
 	void memCopy(InContainer& source, OutContainer& dest) {
