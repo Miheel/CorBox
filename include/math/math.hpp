@@ -108,6 +108,20 @@ namespace cor {
 		return product;
 	}
 
+	size_t gcd(const int n1, const int n2) {
+
+		if (n2 == 0)
+			return n1;
+
+		gcd(n2, n1 % n2);
+	}
+
+	size_t egcd(const int n1, const int n2) {
+
+		if (n2 == 0)
+			return n1;
+	}
+
 }// !cor::
 
 #endif // !MATH_HPP
