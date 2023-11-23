@@ -4,14 +4,16 @@
 
 #include "utility"
 #include "memory"
+#include <type_traits>
 #include "type_traits"
 #include "types.hpp"
 
 namespace cor {
 
+	//non array types
 	template<class T, class Deleter = mem::Deleter<T>>
 	class UniquePtr
-	{	
+	{
 	public:
 		using deleterNoRef = typename cor::RemoveReference_T<Deleter>;
 		using Pointer = typename cor::addPointer_T<T, deleterNoRef>;
@@ -28,6 +30,10 @@ namespace cor {
 				deleter = cor::forward<Deleter>(other.getDeleter());
 				return *this;
 			}
+		}
+		UniquePtr& operator=(nullptr_t) noexcept {
+			this->reset();
+			return *this;
 		}
 
 		//deleted functionality
@@ -74,14 +80,12 @@ namespace cor {
 			return *get();
 		}
 
-		//Array version, unique_ptr<T[]>
-		Elem_t& operator[](cor::size_t i) const {
-			return this->get()[i];
-		}
-
 		//Destructor
 		~UniquePtr() {
-			this->getDeleter()(get());
+			if (get() != nullptr)
+			{
+				this->getDeleter()(get());
+			}
 		}
 
 
@@ -90,15 +94,111 @@ namespace cor {
 		Deleter deleter;
 	};
 
-	template<class T, class ...Args>
+	//array types
+	template<class T, class Deleter>
+	class UniquePtr<T[], Deleter>
+	{
+	public:
+		using deleterNoRef = typename cor::RemoveReference_T<Deleter>;
+		using Pointer = typename cor::addPointer_T<T, deleterNoRef>;
+		using Elem_t = T;
+
+		//Constructors
+		UniquePtr() :pointer(nullptr) {}
+
+		template< class U >
+		explicit UniquePtr(U p) noexcept :pointer(p) {}
+
+		//assigns
+		UniquePtr& operator =(UniquePtr&& other) noexcept {
+			{
+				this->reset(other.release());
+				deleter = cor::forward<Deleter>(other.getDeleter());
+				return *this;
+			}
+		}
+		UniquePtr& operator=(nullptr_t) noexcept {
+			this->reset();
+			return *this;
+		}
+
+		//deleted functionality
+		UniquePtr(const UniquePtr& other) = delete;
+		UniquePtr& operator =(const UniquePtr& other) = delete;
+
+		//Modifiers
+		Pointer release() noexcept {
+			auto oldPtr = this->pointer;
+			this->pointer = nullptr;
+
+			return oldPtr;
+		}
+		template<class U>
+		void reset(U ptr) noexcept {
+			auto oldPtr = this->pointer;
+			this->pointer = ptr;
+
+			if (oldPtr)
+			{
+				this->getDeleter()(oldPtr);
+			}
+		}
+		void reset(std::nullptr_t = nullptr) noexcept {
+			reset(Pointer());
+		}
+		void swap(UniquePtr& other) noexcept {
+			cor::swap(this->pointer, other.pointer);
+			cor::swap(this->deleter, other.deleter);
+		}
+
+		//Observers
+		Pointer get() const noexcept {
+			return pointer;
+		}
+		Deleter& getDeleter() {
+			return deleter;
+		}
+		explicit operator bool() const noexcept {
+			return this->get() != nullptr;
+		}
+
+		//dereferences pointer to the managed object
+		Pointer operator->() const noexcept {
+			return pointer;
+		}
+		Elem_t operator*() const noexcept {
+			return *get();
+		}
+
+		Elem_t& operator[](cor::size_t i) const {
+			return this->get()[i];
+		}
+
+		//Destructor
+		~UniquePtr() {
+			if (get() != nullptr)
+			{
+				this->getDeleter()(get());
+			}
+		}
+
+	private:
+		Pointer pointer;
+		Deleter deleter;
+	};
+
+	//non array type
+	template<class T, class ...Args, cor::EnableIf_T<!cor::IsArray_T<T>, bool> = true >
 	constexpr UniquePtr<T> makeUnique(Args && ...args)
 	{
-		return UniquePtr<T>(new T(cor::forward<Args>(args)...));
+		//return UniquePtr<T>(new T(cor::forward<Args>(args)...));
+		return UniquePtr<T>(mem::allocate<T>(args...));
 	}
 
-	template< class T >
+	//array type
+	template< class T, cor::EnableIf_T<cor::IsArray_T<T> && std::extent_v<T> == 0, bool> = true >
 	constexpr UniquePtr<T> makeUnique(cor::size_t size) {
-		return UniquePtr<T>(new cor::RemoveExtent_T<T>[size]);
+		return UniquePtr<T>(mem::allocate_r_extent<T>(size));
 	}
 
 	template<class T, class D>
