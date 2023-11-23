@@ -2,9 +2,10 @@
 #define SHAREDPTR_HPP
 
 #include <memory>
-#include "utility"
+#include <utility>
+#include "utility.hpp"
 #include "memory.hpp"
-#include "type_traits"
+#include "type_traits.hpp"
 #include "types.hpp"
 
 namespace cor {
@@ -15,8 +16,8 @@ namespace cor {
 	private:
 		T* pointer = nullptr;
 		Deleter deleter;
-		size_t use_count = 0;
-		size_t weak_count = 0;
+		long use_count = 0;
+		long weak_count = 0;
 
 
 	public:
@@ -28,8 +29,8 @@ namespace cor {
 		void decRefCount() { if (use_count > 0)use_count--; }
 		void decWeakCount() { if (weak_count > 0)weak_count--; }
 
-		size_t GetUseCount() { return use_count; }
-		size_t GetWeakCount() { return weak_count; }
+		long GetUseCount() { return use_count; }
+		long GetWeakCount() { return weak_count; }
 
 		void deleteCPtr() { deleter(pointer); }
 
@@ -64,10 +65,10 @@ namespace cor {
 		SharedPtr(Y* ptr, Deleter d) : pointer(ptr), c_block(ptr, d) {}
 
 		//assigns
-		SharedPtr& operator =(SharedPtr&& other) noexcept {}
+		//SharedPtr& operator =(SharedPtr&& other) noexcept {}
 
-		SharedPtr(const SharedPtr& other);
-		SharedPtr& operator =(const SharedPtr& other);
+		//SharedPtr(const SharedPtr& other);
+		//SharedPtr& operator =(const SharedPtr& other);
 
 		//Modifiers
 		void reset() noexcept {
@@ -145,18 +146,22 @@ namespace cor {
 	};
 
 	template<class T, class ...Args>
-	constexpr SharedPtr<T> makeUnique(Args && ...args)
+	constexpr SharedPtr<T> makeShared(Args && ...args)
 	{
-		return SharedPtr<T>(new T(cor::forward<Args>(args)...));
+		void* storage = mem::allocateRaw(sizeof(SharedPtr<T>) + sizeof(T));
+		//void* storage = operator new(sizeof(SharedPtr<T>) + sizeof(T));
+		//return SharedPtr<T>(::new (storage) T(std::forward<Args>(args)...));
+		return SharedPtr<T>(mem::allocatePlace<T>(storage, args...));
 	}
 
-	template< class T >
-	constexpr SharedPtr<T> makeUnique(cor::size_t size) {
-		return SharedPtr<T>(new cor::RemoveExtent_T<T>[size]);
-	}
+
+	//template< class T >
+	//constexpr SharedPtr<T> makeUnique(cor::size_t size) {
+	//	return SharedPtr<T>(new cor::RemoveExtent_T<T>[size]);
+	//}
 
 	template<class T>
-	void swap(SharedPtr<T>& lhs, UniquePtr<T>& rhs) noexcept
+	void swap(SharedPtr<T>& lhs, SharedPtr<T>& rhs) noexcept
 	{
 		lhs.swap(rhs);
 	}
