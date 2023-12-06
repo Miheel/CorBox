@@ -2,7 +2,7 @@
 
 cor::String::String(size_t count, char chr) :ssize(count)
 {
-	this->ptr = allocator.allocate(count);
+	this->ptr = allocator.allocate(count + 1);
 	size_t i = 0;
 	for (; i < count; i++)
 	{
@@ -15,7 +15,7 @@ cor::String::String(const_pointer s)
 {
 	this->ssize = cor::strlen(s);
 
-	this->ptr = allocator.allocate(this->ssize);
+	this->ptr = allocator.allocate(this->ssize + 1);
 	allocator.constructN(this->ptr, this->ssize + 1);
 
 	mem::memCopy(s, s + this->ssize, this->ptr);
@@ -25,7 +25,7 @@ cor::String::String(const_pointer s, size_t count)
 {
 	this->ssize = count;
 
-	this->ptr = allocator.allocate(this->ssize);
+	this->ptr = allocator.allocate(this->ssize + 1);
 	allocator.constructN(this->ptr, this->ssize + 1);
 
 	mem::memCopy(s, s + this->ssize, this->ptr);
@@ -41,13 +41,33 @@ cor::String::String(String && other) noexcept
 }
 
 cor::String::String(std::initializer_list<char> ilist)
+	:String(ilist.begin(), ilist.size())
+{}
+
+cor::String & cor::String::operator=(const String & str)
 {
+	if (*this != str)
+	{
+		auto temp(str);
+		this->swap(temp);
+	}
+	return *this;
+}
+
+cor::String & cor::String::operator=(String && str) noexcept
+{
+	if (*this != str)
+	{
+		this->swap(str);
+	}
+	return *this;
 }
 
 cor::String::reference cor::String::operator[](size_t index)
 {
 	return this->ptr[index];
 }
+
 cor::String::const_reference cor::String::operator[](size_t index) const
 {
 	return this->ptr[index];
@@ -96,4 +116,26 @@ constexpr void cor::String::swap(String & other) noexcept
 
 cor::String::~String()
 {
+	//allocator.deallocate(this->ptr);
+	allocator.deallocate(this->ptr, this->size() + 1);
+}
+
+bool cor::operator==(const cor::String & lhs, const cor::String & rhs) noexcept
+{
+	return cor::strcmp(lhs.data(), rhs.data()) == 0;
+}
+
+bool cor::operator!=(const cor::String & lhs, const cor::String & rhs) noexcept
+{
+	return cor::strcmp(lhs.data(), rhs.data()) != 0;
+}
+
+bool cor::operator==(const cor::String & lhs, const char * rhs) noexcept
+{
+	return cor::strcmp(lhs.data(), rhs) == 0;
+}
+
+bool cor::operator!=(const cor::String & lhs, const char * rhs) noexcept
+{
+	return cor::strcmp(lhs.data(), rhs) != 0;
 }

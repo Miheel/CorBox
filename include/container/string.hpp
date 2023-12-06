@@ -3,6 +3,7 @@
 
 #include "utility.hpp"
 #include "memory.hpp"
+#include <initializer_list>
 
 namespace cor {
 
@@ -23,6 +24,13 @@ namespace cor {
 		String(String&& other) noexcept;
 		String(std::initializer_list<char> ilist);
 
+		//ASSIGN
+		String& operator=(const String& str);
+		String& operator=(String&& str) noexcept;
+		String& operator=(const_pointer s);
+		String& operator=(char ch);
+		String& operator=(std::initializer_list<char> ilist);
+
 		//ELEM ACCESS
 		reference operator[](size_t index);
 		const_reference operator[](size_t index) const;
@@ -41,6 +49,8 @@ namespace cor {
 		//MODIFIERS
 		constexpr void swap(String& other) noexcept;
 
+		//OPERATIONS
+
 
 		~String();
 
@@ -50,6 +60,10 @@ namespace cor {
 		pointer ptr = nullptr;
 	};
 
+	bool operator==(const cor::String& lhs, const cor::String& rhs) noexcept;
+	bool operator!=(const cor::String& lhs,const cor::String& rhs) noexcept;
+	bool operator==(const cor::String& lhs, const char* rhs) noexcept;
+	bool operator!=(const cor::String& lhs, const char* rhs) noexcept;
 }
 
 #endif // !STRING_HPP
