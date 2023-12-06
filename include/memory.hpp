@@ -3,6 +3,7 @@
 
 #include "Util/utility.hpp"
 #include "type_traits.hpp"
+#include "math.hpp"
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -21,7 +22,11 @@
 //#undef new
 //#include "MemoryLeakChecker.hpp"
 
+#define DEFAULT_ALIGNMENT 16ull
+
 namespace cor::mem {
+	
+	enum class alignVal_T : std::size_t {};
 
 	template <typename T>
 	T* allocateArr(size_t size) {
@@ -65,6 +70,69 @@ namespace cor::mem {
 		return ::new (place) T(std::forward<Args>(args)...);
 	}
 
+	template<size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
+	inline void* allocateRaw(size_t count) {
+		return operator new(count, alignVal_T{ Align });
+	}
+	template<size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
+	inline void* allocateRaw(size_t count) {
+		return operator new(count);
+	}
+
+	template<size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
+	inline void deallocateRaw(void* ptr, size_t n) {
+		return operator delete(ptr, n, alignVal_T{ Align });
+	}
+	template<size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
+	inline void deallocateRaw(void* ptr, size_t n) {
+		return operator delete(ptr, n);
+	}
+	
+	template<class T>
+	inline constexpr size_t align_of = max_of(alignof(T), static_cast<size_t>(DEFAULT_ALIGNMENT));
+
+	template<class T>
+	struct Allocator
+	{
+		using value_type = T;
+		using pointer = T * ;
+		using const_pointer = const T *;
+		using reference = T & ;
+		using const_reference = const T & ;
+		using size_type = size_t;
+		using difference_type = std::ptrdiff_t;
+
+		Allocator() = default;
+		constexpr Allocator(const Allocator & other) noexcept = default;
+		template<class Other>
+		constexpr Allocator(const Allocator<Other> & other) noexcept {}
+
+		[[nodiscard]] pointer allocate(size_type n) {
+			return static_cast<pointer>(allocateRaw<align_of<pointer>>(n * sizeof(T)));
+		}
+
+		void deallocate(pointer p, size_type n) {
+			deallocateRaw<align_of<pointer>>(p, n);
+		}
+
+		void construct(pointer p, const_reference val) {
+			new(static_cast<void*>(p)) T(val);
+		}
+
+		void constructN(pointer p, size_type n) {
+			for (size_t i = 0; i < n; i++)
+			{
+				new(static_cast<void*>(p+i)) T();
+			}
+		}
+
+		void destroy(pointer p) {
+			p->~T();
+		}
+
+		~Allocator() = default;
+	};
+
 	template<class T>
 	struct Deleter
 	{
@@ -85,10 +153,6 @@ namespace cor::mem {
 			deallocateArr(ptr);
 		}
 	};
-
-	void* allocateRaw(size_t count) {
-		return operator new(count);
-	}
 
 	template<typename InputIt, typename OutputIt>
 	void memCopy(InputIt first, InputIt last, OutputIt d_first) {
