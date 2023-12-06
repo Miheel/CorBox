@@ -1,10 +1,10 @@
 # CorBox
 
-simble toolbox with c++ funtons
+simble toolbox with c++ functions
 
 ## Usage
 
-include functions as normal just dowload and put the repo in your project include path
+include things as normal, dowload and put the repo in your project include path.
 
 ```cpp
 #include "container/array.hpp"
@@ -23,7 +23,6 @@ main() -> int {
   - [x] Array
   - [x] array buffer
   - [x] linked list
-  - [x] array buffer
   - [ ] queue fifo/lifo/pq
   - [ ] String
 - [ ] algorithms
