@@ -1,6 +1,8 @@
 #ifndef ALGORITHMS_HPP
 #define ALGORITHMS_HPP
 
+#include "slice.hpp"
+
 namespace cor {
 
 	template<typename InIt, typename OutIt, typename Func>
@@ -33,6 +35,19 @@ namespace cor {
 			return true;
 		}
 		return false;
+	}
+
+	template<class T>
+	T search(cor::Slice<T> slice, int value) 
+	{
+		for (auto It = slice.begin(); It != slice.end(); It++)
+		{
+			if (*It == value)
+			{
+				return *It;
+			}
+		}
+		return *slice.end();
 	}
 
 } // !namespace cor

@@ -1,8 +1,8 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
 
+#include <initializer_list>
 #include "memory.hpp"
-#include "Util/algorithms.hpp"
 
 namespace cor {
 
@@ -16,8 +16,7 @@ namespace cor {
 		//constructors
 		explicit Buffer(size_ty size)
 			:begin_ptr(mem::allocateArr<T>(size)), end_ptr(begin_ptr + size)
-		{
-		}
+		{}
 
 		Buffer(const T* source, size_ty size)
 			:Buffer(size) {
@@ -33,6 +32,9 @@ namespace cor {
 		Buffer(Buffer&& rhs) {//move constructor
 			this->swap(rhs);
 		}
+
+		constexpr Buffer(std::initializer_list<T> init)
+			:Buffer(init.begin(), init.size()) {}
 
 		//Assign
 		Buffer& operator= (const Buffer& rhs) {//copy assign
@@ -69,7 +71,6 @@ namespace cor {
 
 		~Buffer() {
 			this->freemem();
-
 		}
 
 	private:

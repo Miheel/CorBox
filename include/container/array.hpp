@@ -2,7 +2,7 @@
 #define ARRAY_HPP
 
 #include "buffer.hpp"
-
+#include "slice.hpp"
 namespace cor {
 
 	template<typename T>
@@ -13,7 +13,6 @@ namespace cor {
 		using const_reference = const T &;
 		using iterator = T * ;
 		using const_iterator = const T*;
-		//using size_ty = unsigned int;
 
 		//constructors
 		Array() : buffer(0) {}
@@ -30,6 +29,10 @@ namespace cor {
 			this->swap(rhs);
 		}
 
+		constexpr Array(std::initializer_list<T> init) 
+			:buffer(init), currentSize(init.size())
+		{}
+
 		//Assign
 		Array& operator= (const Array& rhs) { //copy assign
 			auto temp(rhs);
@@ -42,14 +45,18 @@ namespace cor {
 		}
 
 		//Access
-		reference operator[] (size_ty index) { return buffer[index]; }
-		const_reference operator[] (size_ty index) const { return buffer[index]; }
+		constexpr reference operator[] (size_ty index) { return buffer[index]; }
+		constexpr const_reference operator[] (size_ty index) const { return buffer[index]; }
+
+		constexpr reference at(size_ty index) { return buffer[index]; }
+		constexpr const_reference at(size_ty index) const { return buffer[index]; }
+
 
 		iterator data() { return buffer.data(); }
 		const_iterator data() const { return buffer.data(); }
 
 		//Capacity
-		size_ty size() const { return currentSize; }
+		size_ty size() { return currentSize; }
 		bool empty() { return currentSize == 0 ? true : false; }
 		size_ty capacity() { return buffer.size(); }
 		void reserv(size_ty newSize) {
@@ -67,12 +74,6 @@ namespace cor {
 			Array temp(buffer.size());
 			this->swap(temp);
 		}
-		//iterator insert(iterator pos, const T& value) {}
-		//iterator insert(const_iterator pos, const T& value) {}
-		//iterator insert(iterator pos, T&& value) {}
-		//iterator insert(const_iterator pos, T&& value) {}
-		//iterator erase(iterator pos) {}
-		//iterator erase(const_iterator pos) {}
 		void pushBack(const T& value) {
 			if (this->size() == this->capacity())
 			{
@@ -93,10 +94,17 @@ namespace cor {
 
 		//Iterators
 		const_iterator begin() const { return buffer.begin(); }
-		const_iterator end() const { return buffer.begin + currentSize; }
+		const_iterator end() const { return buffer.begin() + currentSize; }
 
 		iterator begin() { return buffer.begin(); }
-		iterator end() { return buffer.begin + currentSize; }
+		iterator end() { return buffer.begin() + currentSize; }
+
+		Slice<T> slice() {
+			return Slice<T>(this->begin(), this->end());
+		}
+		Slice<T> slice(size_t first, size_t last) {
+			return Slice<T>(this->begin() + first, this->begin() + last);
+		}
 
 		~Array() = default;
 
@@ -128,7 +136,6 @@ namespace cor {
 
 		Buffer<T> buffer;
 		size_ty currentSize = 0;
-
 	};
 
 } // !namespace cor
