@@ -87,6 +87,10 @@ namespace cor::mem {
 	inline void deallocateRaw(void* ptr, size_t n) {
 		return operator delete(ptr, n);
 	}
+
+	inline void deallocateRaw(void* ptr) {
+		return operator delete(ptr);
+	}
 	
 	template<class T>
 	inline constexpr size_t align_of = max_of(alignof(T), static_cast<size_t>(DEFAULT_ALIGNMENT));
@@ -113,6 +117,10 @@ namespace cor::mem {
 
 		void deallocate(pointer p, size_type n) {
 			deallocateRaw<align_of<pointer>>(p, n);
+		}
+
+		void deallocate(pointer p) {
+			deallocateRaw(p);
 		}
 
 		void construct(pointer p, const_reference val) {
