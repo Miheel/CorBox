@@ -42,6 +42,8 @@ namespace cor {
         cor::moveSwap(*first, *second);
     }
 
+	size_t strlen(const char* str);
+
 } // !namespace cor
 
 #endif // !UTILITY_HPP
