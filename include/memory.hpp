@@ -134,6 +134,18 @@ namespace cor::mem {
 			}
 		}
 
+		[[nodiscard]] pointer create(size_type n, const_reference val) {
+			auto tmp_ptr = allocate(n);
+			construct(tmp_ptr, val);
+			return tmp_ptr;
+		}
+
+		[[nodiscard]] pointer createN(size_type n) {
+			auto tmp_ptr = allocate(n);
+			constructN(tmp_ptr, n);
+			return tmp_ptr;
+		}
+
 		void destroy(pointer p) {
 			p->~T();
 		}

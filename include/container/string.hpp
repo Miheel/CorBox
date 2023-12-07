@@ -1,9 +1,10 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
+#include <initializer_list>
 #include "utility.hpp"
 #include "memory.hpp"
-#include <initializer_list>
+#include "slice.hpp"
 
 namespace cor {
 
@@ -28,7 +29,6 @@ namespace cor {
 		String& operator=(const String& str);
 		String& operator=(String&& str) noexcept;
 		String& operator=(const_pointer s);
-		String& operator=(char ch);
 		String& operator=(std::initializer_list<char> ilist);
 
 		//ELEM ACCESS
@@ -40,17 +40,21 @@ namespace cor {
 		const const_reference back() const;
 		pointer data() noexcept;
 		const_pointer data() const noexcept;
+		Slice<char> slice(size_t first, size_t last);
+		Slice<char> slice();
 
 		//ITER
+		pointer begin() noexcept;
+		const_pointer begin() const noexcept;
+		pointer end() noexcept;
+		const_pointer end() const noexcept;
 
 		//CAP
 		constexpr size_t size() const noexcept;
+		[[nodiscard]] constexpr bool empty() const noexcept;
 
 		//MODIFIERS
 		constexpr void swap(String& other) noexcept;
-
-		//OPERATIONS
-
 
 		~String();
 

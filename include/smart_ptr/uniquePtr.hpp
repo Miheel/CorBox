@@ -191,7 +191,6 @@ namespace cor {
 	template<class T, class ...Args, cor::EnableIf_T<!cor::IsArray_T<T>, bool> = true >
 	constexpr UniquePtr<T> makeUnique(Args && ...args)
 	{
-		//return UniquePtr<T>(new T(cor::forward<Args>(args)...));
 		return UniquePtr<T>(mem::allocate<T>(args...));
 	}
 
