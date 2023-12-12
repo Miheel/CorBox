@@ -1,11 +1,10 @@
 #ifndef UNIQUEPTR_HPP
 #define UNIQUEPTR_HPP
 
-
-#include "utility"
-#include "memory"
 #include <type_traits>
-#include "type_traits"
+#include "utility.hpp"
+#include "memory.hpp"
+#include "type_traits.hpp"
 #include "types.hpp"
 
 namespace cor {
@@ -205,6 +204,17 @@ namespace cor {
 	{
 		lhs.swap(rhs);
 	}
+
+	template< class T, class D >
+	bool operator==(const UniquePtr<T, D>& ptr, nullptr_t) noexcept {
+		return !ptr;
+	}
+
+	template< class T, class D >
+	bool operator!=(const UniquePtr<T, D>& ptr, nullptr_t) noexcept {
+		return (bool)ptr;
+	}
+
 } // !namespace cor
 
 #endif // !UNIQUEPTR_HPP
