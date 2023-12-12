@@ -187,7 +187,6 @@ namespace cor::mem {
 		memCopy(source.begin(), source.end(), dest.begin());
 	}
 
-
 	template<typename InputIt, typename OutputIt>
 	void memMove(InputIt first, InputIt last, OutputIt d_first) {
 		for (; first != last; first++, d_first++)

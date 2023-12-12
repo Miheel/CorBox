@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include "array.hpp"
 
 namespace cor {
 
@@ -48,18 +49,42 @@ namespace cor {
 	}
 
 	//size_t gcd(const int n1, const int n2) {
-
+	//
 	//	if (n2 == 0)
 	//		return n1;
-
+	//
 	//	gcd(n2, n1 % n2);
 	//}
-
+	//
 	//size_t egcd(const int n1, const int n2) {
-
+	//
 	//	if (n2 == 0)
 	//		return n1;
 	//}
+
+	template<class>
+	class Array;
+
+	using Array2D = cor::Array<cor::Array<float>>;
+
+	Array2D identityMatrix(size_t N);
+
+	Array2D matrixAdd2D(Array2D& first, Array2D& second);
+
+	Array2D matrixSub2D(Array2D& first, Array2D& second);
+
+	Array2D matrixScalar2D(Array2D& first, int scalar);
+
+	Array2D matrixMultip2D(Array2D& first, Array2D& second);
+
+	Array2D matrixTransp2D(Array2D& first);
+
+	Array2D matrixinvers2D(Array2D& first);
+
+	int Det2x2(Array2D& first);
+	int Det3x3(Array2D& first);
+
+	Array2D matrixDet2D(Array2D& first);
 
 }// !cor::
 
