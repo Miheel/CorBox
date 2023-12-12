@@ -37,7 +37,7 @@ namespace cor {
 		reference front();
 		const_reference front() const;
 		reference back();
-		const const_reference back() const;
+		const_reference back() const;
 		pointer data() noexcept;
 		const_pointer data() const noexcept;
 		Slice<char> slice(size_t first, size_t last);

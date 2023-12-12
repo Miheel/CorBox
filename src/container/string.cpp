@@ -97,7 +97,7 @@ cor::String::reference cor::String::back()
 	return this->data()[this->size()];
 }
 
-const cor::String::const_reference cor::String::back() const
+cor::String::const_reference cor::String::back() const
 {
 	return this->data()[this->size()];
 }
