@@ -14,15 +14,17 @@ namespace cor {
 	public:
 
 		//constructors
+		explicit Buffer():end_ptr(nullptr), begin_ptr(nullptr){}
+
 		explicit Buffer(size_ty size)
-			:begin_ptr(mem::allocateArr<T>(size)), end_ptr(begin_ptr + size)
+			:begin_ptr(mem::template allocateArr<T>(size)), end_ptr(begin_ptr + size)
 		{}
 
 		Buffer(const T* source, size_ty size)
 			:Buffer(size) {
 			for (size_ty i = 0; i < size; i++)
 			{
-				this->begin_ptr[i] = source[i];
+				this->begin_ptr[i] = cor::isMovable(source[i]);
 			}
 		}
 		Buffer(const Buffer& other)//copy constructor

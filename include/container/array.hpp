@@ -17,18 +17,23 @@ namespace cor {
 		//constructors
 		Array() : buffer(0) {}
 		explicit Array(size_ty size)
-			:buffer(size)
+			:buffer(size), currentSize(size)
 		{}
 		Array(const T* source, size_ty size)
 			:buffer(source, size), currentSize(size)
 		{}
+		Array(size_t size, const T& val):Array(size) {
+			for (size_t i = 0; i < size; i++)
+			{
+				this->buffer[i] = val;
+			}
+		}
 		Array(const Array& rhs) //copy constructor
-			:Array(rhs, rhs.size())
+			:Array(rhs.data(), rhs.size())
 		{}
 		Array(Array&& rhs) { //move constructor
 			this->swap(rhs);
 		}
-
 		constexpr Array(std::initializer_list<T> init) 
 			:buffer(init), currentSize(init.size())
 		{}
@@ -56,7 +61,7 @@ namespace cor {
 		const_iterator data() const { return buffer.data(); }
 
 		//Capacity
-		size_ty size() { return currentSize; }
+		size_ty size() const { return currentSize; }
 		bool empty() { return currentSize == 0 ? true : false; }
 		size_ty capacity() { return buffer.size(); }
 		void reserv(size_ty newSize) {
@@ -90,6 +95,16 @@ namespace cor {
 		}
 		void popBack() { --currentSize; }
 		void resize(size_ty newSize) {
+			Array newArr(newSize);
+
+			auto count = newSize < this->size() ? newSize : this->size();
+
+			for (size_t i = 0; i < count; i++)
+			{
+				newArr[i] = cor::isMovable(buffer[i]);
+			}
+
+			this->swap(newArr);
 		}
 
 		//Iterators
@@ -137,6 +152,30 @@ namespace cor {
 		Buffer<T> buffer;
 		size_ty currentSize = 0;
 	};
+
+	template<class T>
+	void PrintArr(const Array<T>& arr) {
+		for (auto &e : arr)
+		{
+			std::cout << e << ", ";
+		}
+		std::cout << "\n";
+	}
+
+	template<class T>
+	void PrintArr(const Array<Array<T>>& arr) {
+
+		for (size_t row = 0; row < arr.size(); row++)
+		{
+			for (size_t col = 0; col < arr[row].size(); col++)
+			{
+				std::cout << arr[row][col] << ", ";
+			}
+			std::cout << "\n";
+		}
+	}
+
+
 
 } // !namespace cor
 
