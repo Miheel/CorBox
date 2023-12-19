@@ -1,10 +1,3 @@
-/*
-* Name: Mikael leuf
-* Course: Datastrukturer och algoritmer, dt046g
-* Date: 2021-05-06
-* Lab: Grafer 1
-*/
-
 #ifndef TYPEDEF_HPP
 #define TYPEDEF_HPP
 
@@ -16,10 +9,13 @@
 
 namespace cor::time {
 
+	using femto = std::chrono::duration<int64_t, std::femto>;
+	using pico = std::chrono::duration<int64_t, std::pico>;
 	typedef std::chrono::nanoseconds nano;
 	typedef std::chrono::microseconds micro;
 	typedef std::chrono::milliseconds mili;
 	typedef std::chrono::seconds sec;
+
 	typedef std::chrono::steady_clock steadyClock_T;
 	typedef std::chrono::system_clock systemClock_T;
 
