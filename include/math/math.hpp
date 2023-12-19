@@ -3,12 +3,18 @@
 
 #include <map>
 #include <vector>
+#include <algorithm>
 #include "array.hpp"
 
 namespace cor {
 
 	template<class T>
 	constexpr const T& max_of(const T& a, const T& b) {
+		return a < b ? b : a;
+	}
+
+	template<class T>
+	const T& Max(const T& a, const T& b) {
 		return a < b ? b : a;
 	}
 
@@ -30,7 +36,7 @@ namespace cor {
 				{
 					if (e.second > newFactors.find(e.first)->second)
 					{
-						auto max = std::max(e.second, newFactors.find(e.first)->second);
+						auto max = Max(e.second, newFactors.find(e.first)->second);
 						newFactors[e.first] = max;
 					}
 				}

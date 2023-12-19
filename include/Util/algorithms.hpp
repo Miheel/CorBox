@@ -50,6 +50,10 @@ namespace cor {
 		return *slice.end();
 	}
 
+	size_t strlen(const char* str);
+
+	int strcmp(const char* lhs, const char* rhs);
+
 } // !namespace cor
 
 #endif // !ALGORITHMS_HPP

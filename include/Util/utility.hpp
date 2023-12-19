@@ -42,10 +42,12 @@ namespace cor {
         cor::moveSwap(*first, *second);
     }
 
-	size_t strlen(const char* str);
-
-	int strcmp(const char* lhs, const char* rhs);
-
+	template< class T, class U = T >
+	constexpr T exchange(T& obj, U&& new_value) {
+		auto old_val = isMovable(obj);
+		obj = forward<U>(new_value);
+		return old_val;
+	}
 
 } // !namespace cor
 

@@ -4,7 +4,6 @@
 #include "Util/utility.hpp"
 #include "type_traits.hpp"
 #include "math.hpp"
-
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -22,11 +21,11 @@
 //#undef new
 //#include "MemoryLeakChecker.hpp"
 
-#define DEFAULT_ALIGNMENT 16ull
+constexpr auto DEFAULT_ALIGNMENT = 16ull;
 
 namespace cor::mem {
-	
-	enum class alignVal_T : std::size_t {};
+
+	enum class alignVal_T : size_t {};
 
 	template <typename T>
 	T* allocateArr(size_t size) {
@@ -44,7 +43,7 @@ namespace cor::mem {
 		Elem* alocatedMem = DBG_NEW Elem[size]();
 		return alocatedMem;
 	}
-	
+
 	template <typename T>
 	T* allocate() {
 		return DBG_NEW T;
@@ -67,31 +66,34 @@ namespace cor::mem {
 
 	template <typename T, typename Place, typename... Args>
 	T* allocatePlace(Place* place, Args&&... args) {
-		return ::new (place) T(std::forward<Args>(args)...);
+		return ::new (place) T(cor::forward<Args>(args)...);
+	}
+
+	template <typename T, typename Place>
+	T* allocatePlaceDefault(Place* place) {
+		return ::new (place) T();
 	}
 
 	template<size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
 	inline void* allocateRaw(size_t count) {
-		return operator new(count, alignVal_T{ Align });
+		return operator new(count, std::align_val_t{ Align });
 	}
+
 	template<size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
 	inline void* allocateRaw(size_t count) {
 		return operator new(count);
 	}
 
 	template<size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
-	inline void deallocateRaw(void* ptr, size_t n) {
-		return operator delete(ptr, n, alignVal_T{ Align });
-	}
-	template<size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
-	inline void deallocateRaw(void* ptr, size_t n) {
-		return operator delete(ptr, n);
+	inline void deallocateRaw(void* ptr) {
+		return operator delete(ptr, std::align_val_t{ Align });
 	}
 
+	template<size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
 	inline void deallocateRaw(void* ptr) {
 		return operator delete(ptr);
 	}
-	
+
 	template<class T>
 	inline constexpr size_t align_of = max_of(alignof(T), static_cast<size_t>(DEFAULT_ALIGNMENT));
 
@@ -102,7 +104,7 @@ namespace cor::mem {
 		using pointer = T * ;
 		using const_pointer = const T *;
 		using reference = T & ;
-		using const_reference = const T & ;
+		using const_reference = const T &;
 		using size_type = size_t;
 		using difference_type = std::ptrdiff_t;
 
@@ -112,25 +114,21 @@ namespace cor::mem {
 		constexpr Allocator(const Allocator<Other> & other) noexcept {}
 
 		[[nodiscard]] pointer allocate(size_type n) {
-			return static_cast<pointer>(allocateRaw<align_of<pointer>>(n * sizeof(T)));
-		}
-
-		void deallocate(pointer p, size_type n) {
-			deallocateRaw<align_of<pointer>>(p, n);
+			return static_cast<pointer>(allocateRaw<align_of<value_type>>(n * sizeof(T)));
 		}
 
 		void deallocate(pointer p) {
-			deallocateRaw(p);
+			deallocateRaw<align_of<pointer>>(p);
 		}
 
 		void construct(pointer p, const_reference val) {
-			new(static_cast<void*>(p)) T(val);
+			allocatePlace(p, val);
 		}
 
 		void constructN(pointer p, size_type n) {
 			for (size_t i = 0; i < n; i++)
 			{
-				new(static_cast<void*>(p+i)) T();
+				allocatePlaceDefault<T>(p + i);
 			}
 		}
 

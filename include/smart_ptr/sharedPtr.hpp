@@ -148,7 +148,7 @@ namespace cor {
 	template<class T, class ...Args>
 	constexpr SharedPtr<T> makeShared(Args && ...args)
 	{
-		void* storage = mem::allocateRaw(sizeof(SharedPtr<T>) + sizeof(T));
+		void* storage = mem::allocateRaw<mem::align_of<SharedPtr<T>>>(sizeof(SharedPtr<T>) + sizeof(T));
 		//void* storage = operator new(sizeof(SharedPtr<T>) + sizeof(T));
 		//return SharedPtr<T>(::new (storage) T(std::forward<Args>(args)...));
 		return SharedPtr<T>(mem::allocatePlace<T>(storage, args...));
