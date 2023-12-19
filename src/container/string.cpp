@@ -160,7 +160,7 @@ constexpr void cor::String::swap(String & other) noexcept
 
 cor::String::~String()
 {
-	allocator.deallocate(this->ptr, this->size() + 1);
+	allocator.deallocate(this->ptr);
 }
 
 bool cor::operator==(const cor::String & lhs, const cor::String & rhs) noexcept

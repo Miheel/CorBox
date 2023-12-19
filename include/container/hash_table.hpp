@@ -18,8 +18,9 @@ private:
 
 	cor::Array<cor::UniquePtr<Node>> hashTable;
 	size_t size = 0;
-	const float LOAD_FACTOR = 0.75;
 
+	//load factor for separate chaining between 1 and 3;
+	const float DEFAULT_LOAD_FACTOR = 2;
 
 	template<typename T>
 	int hashFunk(T key)
@@ -95,7 +96,7 @@ public:
 			size++;
 		}
 
-		if (loadFactor() > LOAD_FACTOR)
+		if (loadFactor() > DEFAULT_LOAD_FACTOR)
 		{
 			this->resizeAndRehash(size * 2);
 		}

@@ -15,23 +15,24 @@ namespace cor {
 		using const_iterator = const T*;
 
 		//constructors
-		Array() : buffer(0) {}
-		explicit Array(size_ty size)
+		constexpr Array() : buffer(0) {}
+		constexpr  Array(size_ty size)
 			:buffer(size), currentSize(size)
 		{}
-		Array(const T* source, size_ty size)
+		constexpr Array(const T* source, size_ty size)
 			:buffer(source, size), currentSize(size)
 		{}
-		Array(size_t size, const T& val):Array(size) {
+		constexpr Array(size_t size, const T& val)
+			:Array(size) {
 			for (size_t i = 0; i < size; i++)
 			{
 				this->buffer[i] = val;
 			}
 		}
-		Array(const Array& rhs) //copy constructor
+		constexpr Array(const Array& rhs) //copy constructor
 			:Array(rhs.data(), rhs.size())
 		{}
-		Array(Array&& rhs) { //move constructor
+		constexpr Array(Array&& rhs) { //move constructor
 			this->swap(rhs);
 		}
 		constexpr Array(std::initializer_list<T> init) 
@@ -39,12 +40,12 @@ namespace cor {
 		{}
 
 		//Assign
-		Array& operator= (const Array& rhs) { //copy assign
+		constexpr Array& operator= (const Array& rhs) { //copy assign
 			auto temp(rhs);
 			this->swap(temp);
 			return *this;
 		}
-		Array& operator= (Array&& rhs) { //move assign
+		constexpr Array& operator= (Array&& rhs) { //move assign
 			this->swap(rhs);
 			return *this;
 		}
@@ -57,44 +58,44 @@ namespace cor {
 		constexpr const_reference at(size_ty index) const { return buffer[index]; }
 
 
-		iterator data() { return buffer.data(); }
-		const_iterator data() const { return buffer.data(); }
+		constexpr iterator data() { return buffer.data(); }
+		constexpr const_iterator data() const { return buffer.data(); }
 
 		//Capacity
-		size_ty size() const { return currentSize; }
-		bool empty() { return currentSize == 0 ? true : false; }
-		size_ty capacity() { return buffer.size(); }
-		void reserv(size_ty newSize) {
+		constexpr size_ty size() const { return currentSize; }
+		constexpr bool empty() { return currentSize == 0 ? true : false; }
+		constexpr size_ty capacity() { return buffer.size(); }
+		constexpr void reserv(size_ty newSize) {
 			if (newSize > this->capacity())
 			{
 				realoc(newSize);
 			}
 		}
-		void shrinkToFit() {
+		constexpr void shrinkToFit() {
 			realoc(currentSize);
 		}
 
 		//Modifiers
-		void clear() {
+		constexpr void clear() {
 			Array temp(buffer.size());
 			this->swap(temp);
 		}
-		void pushBack(const T& value) {
+		constexpr void pushBack(const T& value) {
 			if (this->size() == this->capacity())
 			{
 				expand();
 			}
 			buffer[currentSize++] = value;
 		}
-		void pushBack(T&& value) {
+		constexpr void pushBack(T&& value) {
 			if (this->size() == this->capacity())
 			{
 				expand();
 			}
 			buffer[currentSize++] = cor::isMovable(value);
 		}
-		void popBack() { --currentSize; }
-		void resize(size_ty newSize) {
+		constexpr void popBack() { --currentSize; }
+		constexpr void resize(size_ty newSize) {
 			Array newArr(newSize);
 
 			auto count = newSize < this->size() ? newSize : this->size();
@@ -108,29 +109,30 @@ namespace cor {
 		}
 
 		//Iterators
-		const_iterator begin() const { return buffer.begin(); }
-		const_iterator end() const { return buffer.begin() + currentSize; }
+		constexpr const_iterator begin() const { return buffer.begin(); }
+		constexpr const_iterator end() const { return buffer.begin() + currentSize; }
 
-		iterator begin() { return buffer.begin(); }
-		iterator end() { return buffer.begin() + currentSize; }
+		constexpr iterator begin() { return buffer.begin(); }
+		constexpr iterator end() { return buffer.begin() + currentSize; }
 
-		Slice<T> slice() {
+		constexpr Slice<T> slice() {
 			return Slice<T>(this->begin(), this->end());
 		}
-		Slice<T> slice(size_t first, size_t last) {
+		constexpr Slice<T> slice(size_t first, size_t last) {
 			return Slice<T>(this->begin() + first, this->begin() + last);
 		}
 
-		~Array() = default;
+		~Array() {
+			currentSize = 0;
+		}
 
-		void swap(Array& other) {
+		constexpr void swap(Array& other) {
 			this->buffer.swap(other.buffer);
 			cor::swap(this->currentSize, other.currentSize);
 		}
 
-
 	private:
-		void expand() {
+		constexpr void expand() {
 			size_ty newSize = static_cast<size_ty>(this->capacity() * 1.5);
 			if (this->capacity() == 0)
 			{
@@ -143,7 +145,7 @@ namespace cor {
 
 			realoc(newSize);
 		}
-		void realoc(size_ty newSize) {
+		constexpr void realoc(size_ty newSize) {
 			Buffer<T> newBuffer(newSize);
 			mem::memCopy(buffer.begin(), buffer.end(), newBuffer.begin());
 			buffer.swap(newBuffer);

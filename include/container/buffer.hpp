@@ -14,24 +14,24 @@ namespace cor {
 	public:
 
 		//constructors
-		explicit Buffer():end_ptr(nullptr), begin_ptr(nullptr){}
+		constexpr  Buffer():end_ptr(nullptr), begin_ptr(nullptr){}
 
-		explicit Buffer(size_ty size)
+		constexpr  Buffer(size_ty size)
 			:begin_ptr(mem::template allocateArr<T>(size)), end_ptr(begin_ptr + size)
 		{}
 
-		Buffer(const T* source, size_ty size)
+		constexpr Buffer(const T* source, size_ty size)
 			:Buffer(size) {
 			for (size_ty i = 0; i < size; i++)
 			{
 				this->begin_ptr[i] = cor::isMovable(source[i]);
 			}
 		}
-		Buffer(const Buffer& other)//copy constructor
+		constexpr Buffer(const Buffer& other)//copy constructor
 			:Buffer(other.begin(), other.size())
 		{}
 
-		Buffer(Buffer&& rhs) {//move constructor
+		constexpr Buffer(Buffer&& rhs) {//move constructor
 			this->swap(rhs);
 		}
 
@@ -39,34 +39,34 @@ namespace cor {
 			:Buffer(init.begin(), init.size()) {}
 
 		//Assign
-		Buffer& operator= (const Buffer& rhs) {//copy assign
+		constexpr Buffer& operator= (const Buffer& rhs) {//copy assign
 			auto temp(rhs);
 			this->swap(temp);
 			return *this;
 		}
 
-		Buffer& operator= (Buffer&& rhs) {//move assign
+		constexpr Buffer& operator= (Buffer&& rhs) {//move assign
 			this->swap(rhs);
 			return *this;
 		}
 
 		//Access
-		T& operator[] (size_ty index) { return this->begin_ptr[index]; }
-		const T& operator[] (size_ty index) const { return this->begin_ptr[index]; }
+		constexpr T& operator[] (size_ty index) { return this->begin_ptr[index]; }
+		constexpr const T& operator[] (size_ty index) const { return this->begin_ptr[index]; }
 
-		size_ty size() const { return this->end_ptr - this->begin_ptr; }
-		bool empty() { return this->end_ptr == this->begin_ptr; }
+		constexpr size_ty size() const { return this->end_ptr - this->begin_ptr; }
+		constexpr bool empty() { return this->end_ptr == this->begin_ptr; }
 
-		T* begin() { return this->begin_ptr; }
-		T* end() { return this->end_ptr; }
+		constexpr T* begin() { return this->begin_ptr; }
+		constexpr T* end() { return this->end_ptr; }
 
-		const T* begin() const { return this->begin_ptr; }
-		const T* end() const { return this->end_ptr; }
+		constexpr const T* begin() const { return this->begin_ptr; }
+		constexpr const T* end() const { return this->end_ptr; }
 
-		T* data() { return this->begin_ptr; }
-		const T* data() const { return this->begin_ptr; }
+		constexpr T* data() { return this->begin_ptr; }
+		constexpr const T* data() const { return this->begin_ptr; }
 
-		void swap(Buffer& other) {
+		constexpr void swap(Buffer& other) {
 			cor::swap(this->begin_ptr, other.begin_ptr);
 			cor::swap(this->end_ptr, other.end_ptr);
 		}
@@ -76,7 +76,7 @@ namespace cor {
 		}
 
 	private:
-		void freemem() {
+		constexpr void freemem() {
 			mem::deallocateArr(begin_ptr);
 			begin_ptr = nullptr;
 			end_ptr = nullptr;

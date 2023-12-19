@@ -2,6 +2,7 @@
 #define STRING_HPP
 
 #include <initializer_list>
+#include "algorithms.hpp"
 #include "utility.hpp"
 #include "memory.hpp"
 #include "slice.hpp"
