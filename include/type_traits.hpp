@@ -92,6 +92,22 @@ namespace cor {
 	using FalseType = BoolConstant<false>;
 
 	template<class T>
+	struct IsIntegral
+		: FalseType
+	{};
+	template<>
+	struct IsIntegral<int>
+		: TrueType
+	{};
+	template<>
+	struct IsIntegral<long long>
+		: TrueType
+	{};
+
+	template< class T >
+	inline constexpr bool IsIntegral_v = IsIntegral<T>::value;
+
+	template<class T>
 	struct IsArray:FalseType
 	{};
 

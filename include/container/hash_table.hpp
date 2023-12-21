@@ -3,33 +3,37 @@
 
 #include "uniquePtr.hpp"
 #include "array.hpp"
+#include "hash.hpp"
 
+template<typename T>
 class HashTable
 {
 private:
+	template<typename T>
 	struct Node
 	{
-		Node(int data) :
+		Node(T data) :
 			data(data) {}
 
 		int data;
 		cor::UniquePtr<Node> next = nullptr;
 	};
+	template<typename T>
+	using hashArr = cor::Array<cor::UniquePtr<Node<T>>>;
 
-	cor::Array<cor::UniquePtr<Node>> hashTable;
+	hashArr<T> hashTable;
 	size_t size = 0;
 
 	//load factor for separate chaining between 1 and 3;
 	const float DEFAULT_LOAD_FACTOR = 2;
 
 	template<typename T>
-	int hashFunk(T key)
+	size_t hashFunk(T key)
 	{
-		return key % this->hashTable.size();
+		return cor::Hash<T>{}(key) % this->hashTable.size();
 	}
 
 public:
-	HashTable();
 
 	HashTable(size_t size) :hashTable(size)
 	{}
@@ -45,19 +49,43 @@ public:
 		}
 	}
 
-	HashTable(const HashTable& other) {}
-	HashTable(HashTable&& other) {}
+	HashTable(const HashTable& other) :hashTable(other.hashTable.size())
+	{
+		for (auto &e : other.hashTable)
+		{
+			if (e)
+			{
+				auto head = e.get();
+				while (head) {
+					this->insert(head->data);
+					head = head->next.get();
+				}
+			}
+		}
+	}
+
+	HashTable(HashTable&& other) {
+		this->swap(other);
+	}
 
 	template <typename InputIt>
-	HashTable(InputIt first, InputIt last);
+	HashTable(InputIt first, InputIt last) :HashTable(first, last, (last - first)) {}
 
-	HashTable& operator=(const HashTable& other);
-	HashTable& operator=(HashTable&& other);
+	HashTable& operator=(const HashTable& other) {
+		HashTable temp(other);
+		this->swap(temp);
+		return *this;
+	}
+	HashTable& operator=(HashTable&& other)
+	{
+		this->swap(other);
+		return *this;
+	}
 
 	template<typename T>
-	Node* search(T key)
+	Node<T>* search(T key)
 	{
-		int index = this->hashFunk(key);
+		size_t index = this->hashFunk(key);
 
 		auto node = this->hashTable.at(index).get();
 
@@ -76,9 +104,9 @@ public:
 	template<typename T>
 	void insert(T key)
 	{
-		auto newNode = cor::makeUnique<Node>(key);
+		auto newNode = cor::makeUnique<Node<T>>(key);
 
-		int index = this->hashFunk(key);
+		size_t index = this->hashFunk(key);
 
 		if (this->hashTable[index] == nullptr)
 		{
@@ -106,7 +134,7 @@ public:
 	void remove(T key) {
 		if (search(key))
 		{
-			int index = this->hashFunk(key);
+			size_t index = this->hashFunk(key);
 
 			if (this->hashTable.at(index).get()->data == key)
 			{
@@ -123,12 +151,12 @@ public:
 					head->next = cor::isMovable(head->next->next);
 				}
 			}
-
+			this->size--;
 		}
 	}
 
-	void resizeAndRehash(size_t newSize){
-		HashTable newTable(newSize);
+	void resizeAndRehash(size_t newSize) {
+		HashTable<T> newTable(newSize);
 
 		for (auto &e : hashTable)
 		{
