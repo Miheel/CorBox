@@ -52,7 +52,9 @@ namespace cor {
 
 		//CAP
 		constexpr size_t size() const noexcept;
-		[[nodiscard]] constexpr bool empty() const noexcept;
+		constexpr bool empty() const noexcept {
+			return size() == 0;
+		}
 
 		//MODIFIERS
 		constexpr void swap(String& other) noexcept;

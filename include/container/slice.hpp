@@ -6,31 +6,31 @@ namespace cor {
 	template<class T>
 	class Slice {
 	public:
-		Slice(T* first = nullptr, T* last = nullptr) : first(first), last(last) {}
+		Slice(T* first = nullptr, T* last = nullptr) : first(first), ssize((last - first)) {}
 
-		size_t size() const { return last - first; }
+		size_t size() const { return ssize; }
 		bool empty() const { return first == nullptr; }
 
 		T& operator[](size_t index) const { return first[index]; }
 		T& at(size_t index) const { return first[index]; }
 
 		const T& front() const { return *first; }
-		const T& back() const { return *last; }
+		const T& back() const { return *(first + ssize - 1); }
 
 		T& front() { return *first; }
-		T& back() { return *last; }
+		T& back() { return *(first + ssize - 1); }
 
 		T* data() { return first; }
 
 		const T* begin() const { return first; }
-		const T* end() const { return last; }
+		const T* end() const { return first + ssize; }
 
 		T* begin() { return first; }
-		T* end() { return last; }
+		T* end() { return first + ssize; }
 
 	private:
 		T* first = nullptr;
-		T* last = nullptr;
+		size_t ssize;
 	};
 
 	template<class T>

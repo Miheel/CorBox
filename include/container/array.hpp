@@ -65,7 +65,7 @@ namespace cor {
 		constexpr size_ty size() const { return currentSize; }
 		constexpr bool empty() { return currentSize == 0 ? true : false; }
 		constexpr size_ty capacity() { return buffer.size(); }
-		constexpr void reserv(size_ty newSize) {
+		constexpr void reserve(size_ty newSize) {
 			if (newSize > this->capacity())
 			{
 				realoc(newSize);
@@ -77,8 +77,11 @@ namespace cor {
 
 		//Modifiers
 		constexpr void clear() {
-			Array temp(buffer.size());
-			this->swap(temp);
+			for  (auto &e : buffer)
+			{
+				e = T();
+			}
+			currentSize = 0;
 		}
 		constexpr void pushBack(const T& value) {
 			if (this->size() == this->capacity())
@@ -147,7 +150,10 @@ namespace cor {
 		}
 		constexpr void realoc(size_ty newSize) {
 			Buffer<T> newBuffer(newSize);
-			mem::memCopy(buffer.begin(), buffer.end(), newBuffer.begin());
+			for (size_t i = 0; i < newSize; i++)
+			{
+				newBuffer[i] = buffer[i];
+			}
 			buffer.swap(newBuffer);
 		}
 

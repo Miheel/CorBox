@@ -29,7 +29,7 @@ namespace cor::mem {
 
 	template <typename T>
 	T* allocateArr(size_t size) {
-		return DBG_NEW T[size];
+		return size > 0 ? DBG_NEW T[size]{ 0 } : DBG_NEW T[size];
 	}
 
 	template <typename T>

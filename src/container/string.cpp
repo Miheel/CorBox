@@ -94,12 +94,12 @@ cor::String::const_reference cor::String::front() const
 
 cor::String::reference cor::String::back()
 {
-	return this->data()[this->size()];
+	return this->data()[this->size() - 1];
 }
 
 cor::String::const_reference cor::String::back() const
 {
-	return this->data()[this->size()];
+	return this->data()[this->size() - 1];
 }
 
 cor::String::pointer cor::String::begin() noexcept
@@ -127,10 +127,7 @@ constexpr size_t cor::String::size() const noexcept
 	return this->ssize;
 }
 
-constexpr bool cor::String::empty() const noexcept
-{
-	return this->size() == 0;
-}
+
 
 cor::String::const_pointer cor::String::data() const noexcept
 {
