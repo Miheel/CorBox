@@ -22,6 +22,11 @@ namespace cor {
 		UniquePtr() :pointer(nullptr) {}
 		UniquePtr(Pointer p) :pointer(p) {}
 
+		UniquePtr(UniquePtr&& other) {
+			this->reset(other.release());
+			deleter = cor::forward<Deleter>(other.getDeleter());
+		}
+
 		//assigns
 		UniquePtr& operator =(UniquePtr&& other) noexcept {
 			{
@@ -89,7 +94,7 @@ namespace cor {
 
 
 	private:
-		Pointer pointer;
+		Pointer pointer = nullptr;
 		Deleter deleter;
 	};
 
@@ -107,6 +112,11 @@ namespace cor {
 
 		template< class U >
 		explicit UniquePtr(U p) noexcept :pointer(p) {}
+
+		UniquePtr(UniquePtr&& other) {
+			this->reset(other.release());
+			deleter = cor::forward<Deleter>(other.getDeleter());
+		}
 
 		//assigns
 		UniquePtr& operator =(UniquePtr&& other) noexcept {

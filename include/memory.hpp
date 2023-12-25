@@ -18,9 +18,6 @@
 #define DBG_NEW new
 #endif
 
-//#undef new
-//#include "MemoryLeakChecker.hpp"
-
 constexpr auto DEFAULT_ALIGNMENT = 16ull;
 
 namespace cor::mem {
@@ -29,7 +26,7 @@ namespace cor::mem {
 
 	template <typename T>
 	T* allocateArr(size_t size) {
-		return size > 0 ? DBG_NEW T[size]{ 0 } : DBG_NEW T[size];
+		return size > 0 ? DBG_NEW T[size]{} : DBG_NEW T[size];
 	}
 
 	template <typename T>

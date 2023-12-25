@@ -29,6 +29,9 @@ namespace cor {
 		void decRefCount() { if (use_count > 0)use_count--; }
 		void decWeakCount() { if (weak_count > 0)weak_count--; }
 
+		void incRefCount() { use_count++; }
+		void incWeakCount() { weak_count++; }
+
 		long GetUseCount() { return use_count; }
 		long GetWeakCount() { return weak_count; }
 
@@ -52,6 +55,19 @@ namespace cor {
 
 		C_block_ptr GetCblock() { return c_block; }
 
+		void freemem() {
+			if (c_block)
+			{
+				c_block->decRefCount();
+				c_block->decWeakCount();
+				if (c_block->GetUseCount() == 0 && c_block->GetWeakCount() == 0)
+				{
+					c_block->deleteCPtr();
+					mem::deallocate<Control_block<Elem_t>>(c_block);
+				}
+			}
+		}
+
 	public:
 		//Constructors
 
@@ -64,16 +80,40 @@ namespace cor {
 		template< class Y, class Deleter >
 		SharedPtr(Y* ptr, Deleter d) : pointer(ptr), c_block(ptr, d) {}
 
-		//assigns
-		//SharedPtr& operator =(SharedPtr&& other) noexcept {}
+		SharedPtr(const SharedPtr& other) {
+			if (this != &other && other)
+			{
+				this->c_block = other.c_block;
+				this->pointer = other.pointer;
+				this->c_block->incRefCount();
+				this->c_block->decWeakCount();
+			}
+		}
+		SharedPtr(SharedPtr&& other) {
+			if (this != &other && other)
+			{
+				this->swap(other);
+			}
+		}
 
-		//SharedPtr(const SharedPtr& other);
-		//SharedPtr& operator =(const SharedPtr& other);
+		//assigns
+		SharedPtr& operator =(const SharedPtr& other) {
+			SharedPtr temp(other);
+			temp.swap(*this);
+			return *this;
+		}
+		SharedPtr& operator =(SharedPtr&& other) noexcept {
+			SharedPtr(cor::isMovable(other)).swap(*this);
+			return *this;
+		}
 
 		//Modifiers
 		void reset() noexcept {
-			c_block->decRefCount();
-			SharedPtr().swap(*this);
+
+			this->freemem();
+
+			pointer = nullptr;
+			c_block = nullptr;
 		}
 
 		template< class Y >
@@ -132,16 +172,7 @@ namespace cor {
 
 		//Destructor
 		~SharedPtr() {
-			if (c_block)
-			{
-				c_block->decRefCount();
-				c_block->decWeakCount();
-				if (c_block->GetUseCount() == 0 && c_block->GetWeakCount() == 0)
-				{
-					c_block->deleteCPtr();
-					mem::deallocate<Control_block<Elem_t>>(c_block);
-				}
-			}
+			this->freemem();
 		}
 	};
 

@@ -22,7 +22,7 @@ private:
 	using hashArr = cor::Array<cor::UniquePtr<Node<T>>>;
 
 	hashArr<T> hashTable;
-	size_t size = 0;
+	size_t ssize = 0;
 
 	//load factor for separate chaining between 1 and 3;
 	const float DEFAULT_LOAD_FACTOR = 2;
@@ -35,8 +35,9 @@ private:
 
 public:
 
-	HashTable(size_t size) :hashTable(size)
-	{}
+	HashTable() :hashTable(0) {}
+
+	HashTable(size_t size) :hashTable(size) {}
 
 	template<typename RandomIt>
 	HashTable(RandomIt first, RandomIt last, size_t size)
@@ -111,7 +112,7 @@ public:
 		if (this->hashTable[index] == nullptr)
 		{
 			this->hashTable[index] = cor::isMovable(newNode);
-			size++;
+			ssize++;
 		}
 		else
 		{
@@ -121,12 +122,12 @@ public:
 				curr = curr->next.get();
 			}
 			curr->next = cor::isMovable(newNode);
-			size++;
+			ssize++;
 		}
 
 		if (loadFactor() > DEFAULT_LOAD_FACTOR)
 		{
-			this->resizeAndRehash(size * 2);
+			this->resizeAndRehash(ssize * 2);
 		}
 	}
 
@@ -151,7 +152,7 @@ public:
 					head->next = cor::isMovable(head->next->next);
 				}
 			}
-			this->size--;
+			this->ssize--;
 		}
 	}
 
@@ -173,11 +174,19 @@ public:
 		this->swap(newTable);
 	}
 
-	float loadFactor() const { return (float)this->size / this->hashTable.size(); }
+	size_t size() const {
+		return ssize;
+	}
+
+	hashArr<T>& data() {
+		return hashTable;
+	}
+
+	float loadFactor() const { return (float)this->size() / this->hashTable.size(); }
 
 	void swap(HashTable& other) {
 		this->hashTable.swap(other.hashTable);
-		cor::swap(this->size, other.size);
+		cor::swap(this->ssize, other.ssize);
 	}
 	void print()
 	{
