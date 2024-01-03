@@ -2,7 +2,7 @@
 #define LINKED_LIST_HPP
 
 #include <iostream>
-
+#include "utility.hpp"
 namespace cor {
 
 	template<typename T>
@@ -95,6 +95,7 @@ namespace cor {
 		void print_reverse() const;
 
 		Linked_list<T> &merge(Linked_list &list1, Linked_list &list2);
+		void merge(Linked_list &other);
 
 		void swap(Linked_list &other) noexcept;
 
@@ -401,31 +402,78 @@ namespace cor {
 	template<typename T>
 	inline Linked_list<T>& Linked_list<T>::merge(Linked_list &list1, Linked_list &list2)
 	{
-		node_t* walker_1 = list1.head, *walker_2 = list2.head;
 
-		while (walker_1 != nullptr && walker_2 != nullptr)
+		while (!list1.is_empty() && !list2.is_empty())
 		{
 			if (list1.front() < list2.front())
 			{
-				walker_1 = walker_1->next;
-				this->push_back(list1.pop_front());
+				this->push_back(list1.front());
+				list1.pop_front();
 			}
 			else
 			{
-				walker_2 = walker_2->next;
-				this->push_back(list2.pop_front());
+				this->push_back(list2.front());
+				list2.pop_front();
 			}
 		}
 		while (!list1.is_empty())
 		{
-			this->push_back(list1.pop_front());
+			this->push_back(list1.front());
+			list2.pop_front();
 		}
 		while (!list2.is_empty())
 		{
-			this->push_back(list2.pop_front());
+			this->push_back(list2.front());
+			list2.pop_front();
 		}
-
 		return *this;
+	}
+
+	template<typename T>
+	inline void Linked_list<T>::merge(Linked_list & other)
+	{
+		/*	if (!(*this == other))
+			{
+				node_t* walker_this = this->head, *walker_other = other.head, *temp_this = nullptr, *temp_other = nullptr;
+
+				while (walker_this != nullptr && walker_other != nullptr)
+				{
+					if (walker_this->value < other.front())
+					{
+						walker_this = walker_this->next;
+					}
+					else
+					{
+						temp_other = walker_other->next;
+
+						if (walker_this->prev !=)
+						{
+							walker_this->prev->next = walker_other;
+						}
+						else
+						{
+							walker_this->prev = walker_other
+						}
+
+
+						walker_other->next = walker_this;
+						walker_other->prev = walker_this->prev;
+						walker_this->prev = walker_other;
+						temp_this->next = walker_other;
+
+						walker_other = temp_other;
+						other.head = walker_other;
+						this->nrOfNodes++;
+					}
+				}
+				if (!other.is_empty())
+				{
+					walker_this = walker_other;
+					walker_other->prev = walker_this;
+					this->tail->prev = walker_other;
+					this->nrOfNodes++;
+				}
+			}*/
 	}
 
 	template<typename T>
@@ -434,6 +482,32 @@ namespace cor {
 		cor::swap(this->head, other.head);
 		cor::swap(this->tail, other.tail);
 		cor::swap(this->nrOfNodes, other.nrOfNodes);
+	}
+
+	template< class T>
+	bool operator==(const Linked_list<T>& lhs, const Linked_list<T>& rhs) {
+		bool is_equal = false;
+		if (lhs.size() == rhs.size())
+		{
+			auto walker_l = lhs.begin(), walker_r = rhs.begin();
+
+			for (size_t i = 0; i < lhs.size(); i++)
+			{
+				if (walker_l->value == walker_r->value)
+				{
+					walker_l = walker_l->next;
+					walker_r = walker_r->next;
+					is_equal = true;
+				}
+				else
+				{
+					is_equal = false;
+					break;
+				}
+			}
+
+		}
+		return is_equal;
 	}
 
 } // !namespace cor
