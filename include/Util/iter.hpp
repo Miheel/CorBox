@@ -24,6 +24,21 @@ namespace cor {
 	constexpr long long distance(InputIt first, InputIt last) {
 		return last - first;
 	}
+
+	template< class T, size_t N >
+	constexpr T* begin(T(&array)[N]) noexcept {
+		return (array);
+	}
+
+	template< class T, size_t N >
+	constexpr T* end(T(&array)[N]) noexcept {
+		return (array + N);
+	}
+
+	template< class T, size_t N >
+	constexpr size_t size(T(&array)[N]) noexcept {
+		return N;
+	}
 }
 
 #endif // !ITER_HPP

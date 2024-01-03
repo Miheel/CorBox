@@ -18,6 +18,13 @@ namespace cor {
 		return a < b ? b : a;
 	}
 
+	template <typename T>
+	constexpr T abs(T value) {
+		return (value < 0) ? -value : value;
+	}
+
+	constexpr int sign(long long num);
+
 	size_t pow(size_t base, size_t exponent);
 
 	std::map<size_t, size_t> primefactorization(size_t n);
@@ -90,7 +97,7 @@ namespace cor {
 	int Det2x2(Array2D& first);
 	int Det3x3(Array2D& first);
 
-	Array2D matrixDet2D(Array2D& first);
+	//Array2D matrixDet2D(Array2D& first);
 
 }// !cor::
 

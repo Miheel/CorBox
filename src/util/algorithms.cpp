@@ -12,29 +12,35 @@ size_t cor::strlen(const char * str)
 
 int cor::strcmp(const char * lhs, const char * rhs)
 {
-	auto left = lhs, right = rhs;
-	while (*left != '\0' && *right != '\0')
+	if (lhs && rhs)
 	{
-		if (*left < *right) {
-			return *left - *right;
+		auto left = lhs, right = rhs;
+		while (*left != '\0' && *right != '\0')
+		{
+			if (*left < *right) {
+				return *left - *right;
+			}
+			else if (*left > *right) {
+				return *left - *right;
+			}
+			left++;
+			right++;
 		}
-		else if (*left > *right) {
-			return *left - *right;
+		//equal 0
+		if (*left == '\0' && *right == '\0')
+		{
+			return 0;
 		}
-		left++;
-		right++;
+		//right bigger -1
+		else if (*left == '\0' && *right != '\0')
+		{
+			return -1;
+		}
+		//left bigger 1
+		else if (*left != '\0' && *right == '\0')
+		{
+			return 1;
+		}
 	}
-	if (*left == '\0' && *right == '\0')
-	{
-		return 0;
-	}
-	else if (*left == '\0' && *right != '\0')
-	{
-		return -1;
-	}
-	else if (*left != '\0' && *right == '\0')
-	{
-		return 1;
-	}
-	return 0;
+	return 1;
 }

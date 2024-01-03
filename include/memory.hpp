@@ -72,22 +72,22 @@ namespace cor::mem {
 	}
 
 	template<size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
-	inline void* allocateRaw(size_t count) {
+	void* allocateRaw(size_t count) {
 		return operator new(count, std::align_val_t{ Align });
 	}
 
 	template<size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
-	inline void* allocateRaw(size_t count) {
+	void* allocateRaw(size_t count) {
 		return operator new(count);
 	}
 
 	template<size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
-	inline void deallocateRaw(void* ptr) {
+	void deallocateRaw(void* ptr) {
 		return operator delete(ptr, std::align_val_t{ Align });
 	}
 
 	template<size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
-	inline void deallocateRaw(void* ptr) {
+	void deallocateRaw(void* ptr) {
 		return operator delete(ptr);
 	}
 
@@ -119,7 +119,7 @@ namespace cor::mem {
 		}
 
 		void construct(pointer p, const_reference val) {
-			allocatePlace(p, val);
+			allocatePlace<T>(p, val);
 		}
 
 		void constructN(pointer p, size_type n) {
@@ -183,10 +183,28 @@ namespace cor::mem {
 	}
 
 	template<typename InputIt, typename OutputIt>
-	void memMove(InputIt first, InputIt last, OutputIt d_first) {
-		for (; first != last; first++, d_first++)
+	void memCopyBack(InputIt first, InputIt last, OutputIt d_last) {
+		while (first != last)
 		{
-			*d_first = *first;
+			*(--d_last) = *(--last);
+		}
+	}
+
+	template<typename InContainer, typename OutContainer>
+	void memCopyBack(InContainer& source, OutContainer& dest) {
+		memCopyBack(source.begin(), source.end(), dest.begin());
+	}
+
+	template<typename InputIt, typename OutputIt>
+	void memMove(InputIt first, InputIt last, OutputIt d_first) {
+		if (d_first < first)
+		{
+			memCopy(first, last, d_first);
+		}
+		else if (d_first > first)
+		{
+			auto d_last = d_first + (last - first);
+			memCopyBack(first, last, d_last);
 		}
 	}
 
@@ -194,6 +212,7 @@ namespace cor::mem {
 	void memMove(InContainer& source, OutContainer& dest) {
 		memMove(source.begin(), source.end(), dest.begin());
 	}
+
 } // !namespace mem
 
 #endif // !MEMORY_HPP
