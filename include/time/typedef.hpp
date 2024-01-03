@@ -16,6 +16,10 @@ namespace cor::time {
 	typedef std::chrono::milliseconds mili;
 	typedef std::chrono::seconds sec;
 
+	constexpr long long millisec = 1000000;
+	constexpr long long microsec = 100;
+	constexpr long long nanosec = 1;
+
 	typedef std::chrono::steady_clock steadyClock_T;
 	typedef std::chrono::system_clock systemClock_T;
 

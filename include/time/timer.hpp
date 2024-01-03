@@ -2,6 +2,7 @@
 #define TIMER_HPP
 
 #include <numeric>
+#include <ctime>
 #include "typedef.hpp"
 #ifdef _WIN32
 #include <Windows.h>
@@ -32,79 +33,75 @@ namespace cor::time {
 		}
 
 		double elapsedSec() {
-			auto point = stopPoint - startPoint;
-			return std::chrono::duration<double>(point).count();
+			return std::chrono::duration<double>(stopPoint - startPoint).count();
 		}
 		double elapsedTime() {
 			return double(std::chrono::duration_cast<duration_t>(stopPoint - startPoint).count());
 		}
 	};
 
-	//constexpr int sign(long long num) {
-	//	return num < 0 ? -1 : 1;
-	//}
+#ifdef _WIN32
+	//windows spesific function 
+	inline long long counter()
+	{
+		LARGE_INTEGER li;
+		QueryPerformanceCounter(&li);
+		return li.QuadPart;
+	}
 
-	//template<long long Num, long long Denom = 1>
-	//class ratio {
-	//public:
-	//	static constexpr long long num = sign(Denom)*Num / std::gcd(Num, Denom);
-
-	//	static constexpr long long denom = std::abs(Denom) / std::gcd(Num, Denom);
-	//};
-
-	//class clock {
-
-	//public:
-	//	using rep = long long;
-	//	using scale = ratio<1, 1000000000>;
-
-	//	//using t_point = Time_Point<clock>;
-	//	static long long now() {
-	//		//get time in nanosec
-	//			return (counter()*scale::denom) / frequency();
-	//	}
-
-	//private:
-	//	static inline long long counter()
-	//	{
-	//		LARGE_INTEGER li;
-	//		QueryPerformanceCounter(&li);
-	//		return li.QuadPart;
-	//	}
-
-	//	static inline long long frequency()
-	//	{
-	//		LARGE_INTEGER li;
-	//		QueryPerformanceFrequency(&li);
-	//		return li.QuadPart;
-	//	}
-	//};
-
-	////template<class rep>
-	//class OwnTimer {
-	//	long long startPoint;
-	//	long long stopPoint;
-	//public:
-	//	OwnTimer() = default;
-
-	//	inline void start() {
-	//		startPoint = clock::now();
-	//	}
-	//	inline void stop() {
-	//		stopPoint = clock::now();
-	//	}
+	inline long long frequency()
+	{
+		LARGE_INTEGER li;
+		QueryPerformanceFrequency(&li);
+		return li.QuadPart;
+	}
+#endif // _WIN32#""
 
 
-	//	double elapsedSec() {
-	//		return static_cast<double>(stopPoint - startPoint);
-	//	}
-	//	double elapsedTime() {
-	//		//return double(std::chrono::duration_cast<duration_t>(stopPoint - startPoint).count());
-	//	}
 
-	//private:
+	class clock {
+	public:
+		static long long now() {
+			//get time in nanosec
+#ifdef _WIN32
+			auto count = counter();
+			auto freq = frequency();
+			auto whole_cycles = (count / freq) * 1000000000;
+			auto fraction_cycles = (count% freq) * 1000000000 / freq;
 
-	//};
+
+
+#else
+			//linux 
+
+#endif
+			return whole_cycles + fraction_cycles;
+
+		}
+	};
+
+	template<class rep, rep duration>
+	class OwnTimer {
+		rep startPoint;
+		rep stopPoint;
+	public:
+		OwnTimer() = default;
+
+		inline void start() {
+			startPoint = clock::now();
+		}
+		inline void stop() {
+			stopPoint = clock::now();
+		}
+
+
+		double elapsedSec() {
+			return static_cast<double>(stopPoint - startPoint) / 1000000000.0;
+		}
+		double elapsedTime() {
+			return double(static_cast<rep>(stopPoint - startPoint) / duration);
+		}
+	};
 
 }// !namespace cor::time
 
