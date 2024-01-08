@@ -5,34 +5,35 @@
 #include "algorithms.hpp"
 #include "utility.hpp"
 #include "memory.hpp"
-#include "slice.hpp"
+#include "range.hpp"
 
-namespace cor {
+namespace cor
+{
 
 	class String
 	{
 	public:
-		using pointer = char*;
-		using const_pointer = const char*;
-		using reference = char&;
-		using const_reference = const char&;
+		using pointer = char *;
+		using const_pointer = const char *;
+		using reference = char &;
+		using const_reference = const char &;
 
-		//CTOR
+		// CTOR
 		String() = default;
 		String(size_t count, char chr);
 		String(const_pointer s);
 		String(const_pointer s, size_t count);
-		String(const String& other);
-		String(String&& other) noexcept;
+		String(const String &other);
+		String(String &&other) noexcept;
 		String(std::initializer_list<char> ilist);
 
-		//ASSIGN
-		String& operator=(const String& str);
-		String& operator=(String&& str) noexcept;
-		String& operator=(const_pointer s);
-		String& operator=(std::initializer_list<char> ilist);
+		// ASSIGN
+		String &operator=(const String &str);
+		String &operator=(String &&str) noexcept;
+		String &operator=(const_pointer s);
+		String &operator=(std::initializer_list<char> ilist);
 
-		//ELEM ACCESS
+		// ELEM ACCESS
 		reference operator[](size_t index);
 		const_reference operator[](size_t index) const;
 		reference front();
@@ -44,20 +45,21 @@ namespace cor {
 		Slice<char> slice(size_t first, size_t last);
 		Slice<char> slice();
 
-		//ITER
+		// ITER
 		pointer begin() noexcept;
 		const_pointer begin() const noexcept;
 		pointer end() noexcept;
 		const_pointer end() const noexcept;
 
-		//CAP
+		// CAP
 		constexpr size_t size() const noexcept;
-		constexpr bool empty() const noexcept {
+		constexpr bool empty() const noexcept
+		{
 			return size() == 0;
 		}
 
-		//MODIFIERS
-		constexpr void swap(String& other) noexcept;
+		// MODIFIERS
+		constexpr void swap(String &other) noexcept;
 
 		~String();
 
@@ -67,10 +69,10 @@ namespace cor {
 		pointer ptr = nullptr;
 	};
 
-	bool operator==(const cor::String& lhs, const cor::String& rhs) noexcept;
-	bool operator!=(const cor::String& lhs,const cor::String& rhs) noexcept;
-	bool operator==(const cor::String& lhs, const char* rhs) noexcept;
-	bool operator!=(const cor::String& lhs, const char* rhs) noexcept;
+	bool operator==(const cor::String &lhs, const cor::String &rhs) noexcept;
+	bool operator!=(const cor::String &lhs, const cor::String &rhs) noexcept;
+	bool operator==(const cor::String &lhs, const char *rhs) noexcept;
+	bool operator!=(const cor::String &lhs, const char *rhs) noexcept;
 }
 
 #endif // !STRING_HPP

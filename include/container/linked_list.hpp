@@ -3,33 +3,37 @@
 
 #include <iostream>
 #include "utility.hpp"
-namespace cor {
+namespace cor
+{
 
-	template<typename T>
+	template <typename T>
 	class Linked_list
 	{
 	private:
-		struct node_t {
-			node_t(T value, node_t * next = nullptr, node_t * prev = nullptr)
-				:value(value), next(next), prev(prev)
-			{}
+		struct node_t
+		{
+			node_t(T value, node_t *next = nullptr, node_t *prev = nullptr)
+				: value(value), next(next), prev(prev)
+			{
+			}
 			T value;
-			node_t * next = nullptr;
-			node_t * prev = nullptr;
+			node_t *next = nullptr;
+			node_t *prev = nullptr;
 		};
-		using pointer = node_t * ;
-		using const_pointer = const node_t*;
-		using reference = T & ;
-		using const_reference = const T&;
-
+		using pointer = node_t *;
+		using const_pointer = const node_t *;
+		using reference = T &;
+		using const_reference = const T &;
 
 	public:
 		Linked_list()
-			:head(nullptr), tail(nullptr), nrOfNodes(0)
-		{}
-		Linked_list(const Linked_list & src) { this->copy(src); }
-		Linked_list(Linked_list && src);
-		~Linked_list() {
+			: head(nullptr), tail(nullptr), nrOfNodes(0)
+		{
+		}
+		Linked_list(const Linked_list &src) { this->copy(src); }
+		Linked_list(Linked_list &&src) noexcept;
+		~Linked_list()
+		{
 			while (!this->is_empty())
 			{
 				this->pop_back();
@@ -37,11 +41,11 @@ namespace cor {
 			this->nrOfNodes = 0;
 		}
 
-		Linked_list<T>& operator=(const Linked_list & rhs);
-		Linked_list<T>& operator=(Linked_list&& rhs);
+		Linked_list<T> &operator=(const Linked_list &rhs);
+		Linked_list<T> &operator=(Linked_list &&rhs) noexcept;
 
 		// adds elements to the back
-		Linked_list<T> &operator+=(const Linked_list & rhs);
+		Linked_list<T> &operator+=(const Linked_list &rhs);
 
 		// inserting elements
 		void insert(T value, size_t pos);
@@ -49,12 +53,13 @@ namespace cor {
 		void push_back(T value);
 		void add_node(pointer node);
 
-		//Iterators
+		// Iterators
 		pointer begin() { return this->head; }
 		pointer end() { return this->tail; }
 		const_pointer begin() const { return this->head; }
 		const_pointer end() const { return this->tail; }
-		pointer operator[](size_t pos) const {
+		pointer operator[](size_t pos) const
+		{
 			pointer foundValue = 0;
 			node_t *walker = head;
 
@@ -100,22 +105,22 @@ namespace cor {
 		void swap(Linked_list &other) noexcept;
 
 	private:
-
-		node_t * head;
-		node_t * tail;
+		node_t *head;
+		node_t *tail;
 		size_t nrOfNodes;
 
-		void copy(Linked_list const &other) {
+		void copy(Linked_list const &other)
+		{
 			this->nrOfNodes = 0;
 			if (!other.is_empty())
 			{
-				node_t* walker = other.head->next;
-				node_t* current = this->head = new node_t(other.head->value);
+				node_t *walker = other.head->next;
+				node_t *current = this->head = new node_t(other.head->value);
 				this->nrOfNodes++;
 
 				while (walker != nullptr)
 				{
-					node_t* next = new node_t(walker->value);
+					node_t *next = new node_t(walker->value);
 
 					current->next = next;
 					next->prev = current;
@@ -129,14 +134,14 @@ namespace cor {
 		}
 	};
 
-	template<typename T>
-	inline Linked_list<T>::Linked_list(Linked_list && src)
+	template <typename T>
+	inline Linked_list<T>::Linked_list(Linked_list &&src) noexcept
 	{
 		this->swap(src);
 	}
 
-	template<typename T>
-	inline Linked_list<T>& Linked_list<T>::operator=(const Linked_list & rhs)
+	template <typename T>
+	inline Linked_list<T> &Linked_list<T>::operator=(const Linked_list &rhs)
 	{
 		if (this != &rhs)
 		{
@@ -150,15 +155,15 @@ namespace cor {
 		return *this;
 	}
 
-	template<typename T>
-	inline Linked_list<T> & Linked_list<T>::operator=(Linked_list && rhs)
+	template <typename T>
+	inline Linked_list<T> &Linked_list<T>::operator=(Linked_list &&rhs) noexcept
 	{
 		this->swap(rhs);
 		return *this;
 	}
 
-	template<typename T>
-	inline Linked_list<T>& Linked_list<T>::operator+=(const Linked_list & rhs)
+	template <typename T>
+	inline Linked_list<T> &Linked_list<T>::operator+=(const Linked_list &rhs)
 	{
 		node_t *walker = rhs.head;
 
@@ -170,7 +175,7 @@ namespace cor {
 		return *this;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::insert(T value, size_t pos)
 	{
 		node_t *walker = head;
@@ -196,14 +201,13 @@ namespace cor {
 					ptrPrev->next = newNode;
 					walker->prev = newNode;
 					this->nrOfNodes++;
-
 				}
 				walker = walker->next;
 			}
 		}
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::push_front(T value)
 	{
 		node_t *tmpNode = new node_t(value, this->head, nullptr);
@@ -221,7 +225,7 @@ namespace cor {
 		this->nrOfNodes++;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::push_back(T value)
 	{
 		node_t *tmpNode = new node_t(value, nullptr, this->tail);
@@ -239,7 +243,7 @@ namespace cor {
 		this->nrOfNodes++;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::add_node(pointer node)
 	{
 		if (this->head == nullptr)
@@ -253,7 +257,7 @@ namespace cor {
 		this->nrOfNodes++;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline T Linked_list<T>::at(size_t pos) const
 	{
 		T foundValue = 0;
@@ -274,7 +278,7 @@ namespace cor {
 		return foundValue;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::remove(size_t pos)
 	{
 		node_t *walker = head;
@@ -309,7 +313,7 @@ namespace cor {
 		}
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::pop_front()
 	{
 		node_t *tmpHead = this->head;
@@ -328,7 +332,7 @@ namespace cor {
 		this->nrOfNodes--;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::pop_back()
 	{
 		node_t *tmpTail = this->tail;
@@ -347,10 +351,10 @@ namespace cor {
 		this->nrOfNodes--;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline bool Linked_list<T>::is_order() const
 	{
-		node_t* walker = this->head, *walker_next = this->head->next;
+		node_t *walker = this->head, *walker_next = this->head->next;
 		while (walker_next != nullptr)
 		{
 			if (walker->value <= walker_next->value)
@@ -366,7 +370,7 @@ namespace cor {
 		return true;
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::print() const
 	{
 		if (!this->is_empty())
@@ -383,7 +387,7 @@ namespace cor {
 		}
 	}
 
-	template<typename T>
+	template <typename T>
 	inline void Linked_list<T>::print_reverse() const
 	{
 		if (!this->is_empty())
@@ -399,8 +403,8 @@ namespace cor {
 		}
 	}
 
-	template<typename T>
-	inline Linked_list<T>& Linked_list<T>::merge(Linked_list &list1, Linked_list &list2)
+	template <typename T>
+	inline Linked_list<T> &Linked_list<T>::merge(Linked_list &list1, Linked_list &list2)
 	{
 
 		while (!list1.is_empty() && !list2.is_empty())
@@ -429,8 +433,8 @@ namespace cor {
 		return *this;
 	}
 
-	template<typename T>
-	inline void Linked_list<T>::merge(Linked_list & other)
+	template <typename T>
+	inline void Linked_list<T>::merge(Linked_list &other)
 	{
 		/*	if (!(*this == other))
 			{
@@ -476,16 +480,17 @@ namespace cor {
 			}*/
 	}
 
-	template<typename T>
-	inline void Linked_list<T>::swap(Linked_list & other) noexcept
+	template <typename T>
+	inline void Linked_list<T>::swap(Linked_list &other) noexcept
 	{
 		cor::swap(this->head, other.head);
 		cor::swap(this->tail, other.tail);
 		cor::swap(this->nrOfNodes, other.nrOfNodes);
 	}
 
-	template< class T>
-	bool operator==(const Linked_list<T>& lhs, const Linked_list<T>& rhs) {
+	template <class T>
+	bool operator==(const Linked_list<T> &lhs, const Linked_list<T> &rhs)
+	{
 		bool is_equal = false;
 		if (lhs.size() == rhs.size())
 		{
@@ -505,7 +510,6 @@ namespace cor {
 					break;
 				}
 			}
-
 		}
 		return is_equal;
 	}

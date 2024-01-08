@@ -5,41 +5,37 @@
 #include "array.hpp"
 #include "hash.hpp"
 
-template<typename T>
+template <typename T>
 class HashTable
 {
 private:
-	template<typename T>
 	struct Node
 	{
-		Node(T data) :
-			data(data) {}
+		Node(T data) : data(data) {}
 
-		int data;
+		T data;
 		cor::UniquePtr<Node> next = nullptr;
 	};
-	template<typename T>
-	using hashArr = cor::Array<cor::UniquePtr<Node<T>>>;
 
-	hashArr<T> hashTable;
+	using hashArr = cor::Array<cor::UniquePtr<Node>>;
+
+	hashArr hashTable;
 	size_t ssize = 0;
 
-	//load factor for separate chaining between 1 and 3;
+	// load factor for separate chaining between 1 and 3;
 	const float DEFAULT_LOAD_FACTOR = 2;
 
-	template<typename T>
 	size_t hashFunk(T key)
 	{
 		return cor::Hash<T>{}(key) % this->hashTable.size();
 	}
 
 public:
+	HashTable() : hashTable(0) {}
 
-	HashTable() :hashTable(0) {}
+	HashTable(size_t size) : hashTable(size) {}
 
-	HashTable(size_t size) :hashTable(size) {}
-
-	template<typename RandomIt>
+	template <typename RandomIt>
 	HashTable(RandomIt first, RandomIt last, size_t size)
 	{
 		auto newSize = std::floor(size / 0.5);
@@ -50,14 +46,15 @@ public:
 		}
 	}
 
-	HashTable(const HashTable& other) :hashTable(other.hashTable.size())
+	HashTable(const HashTable &other) : hashTable(other.hashTable.size())
 	{
 		for (auto &e : other.hashTable)
 		{
 			if (e)
 			{
 				auto head = e.get();
-				while (head) {
+				while (head)
+				{
 					this->insert(head->data);
 					head = head->next.get();
 				}
@@ -65,26 +62,27 @@ public:
 		}
 	}
 
-	HashTable(HashTable&& other) {
+	HashTable(HashTable &&other) noexcept
+	{
 		this->swap(other);
 	}
 
 	template <typename InputIt>
-	HashTable(InputIt first, InputIt last) :HashTable(first, last, (last - first)) {}
+	HashTable(InputIt first, InputIt last) : HashTable(first, last, (last - first)) {}
 
-	HashTable& operator=(const HashTable& other) {
+	HashTable &operator=(const HashTable &other)
+	{
 		HashTable temp(other);
 		this->swap(temp);
 		return *this;
 	}
-	HashTable& operator=(HashTable&& other)
+	HashTable &operator=(HashTable &&other) noexcept
 	{
 		this->swap(other);
 		return *this;
 	}
 
-	template<typename T>
-	Node<T>* search(T key)
+	Node *search(T key)
 	{
 		size_t index = this->hashFunk(key);
 
@@ -102,10 +100,9 @@ public:
 		return nullptr;
 	}
 
-	template<typename T>
 	void insert(T key)
 	{
-		auto newNode = cor::makeUnique<Node<T>>(key);
+		auto newNode = cor::makeUnique<Node>(key);
 
 		size_t index = this->hashFunk(key);
 
@@ -131,8 +128,8 @@ public:
 		}
 	}
 
-	template <typename T>
-	void remove(T key) {
+	void remove(T key)
+	{
 		if (search(key))
 		{
 			size_t index = this->hashFunk(key);
@@ -148,7 +145,8 @@ public:
 				{
 					head = head->next.get();
 				}
-				if (head->next) {
+				if (head->next)
+				{
 					head->next = cor::isMovable(head->next->next);
 				}
 			}
@@ -156,7 +154,8 @@ public:
 		}
 	}
 
-	void resizeAndRehash(size_t newSize) {
+	void resizeAndRehash(size_t newSize)
+	{
 		HashTable<T> newTable(newSize);
 
 		for (auto &e : hashTable)
@@ -164,33 +163,36 @@ public:
 			if (e)
 			{
 				auto head = e.get();
-				while (head) {
+				while (head)
+				{
 					newTable.insert(head->data);
 					head = head->next.get();
 				}
 			}
-
 		}
 		this->swap(newTable);
 	}
 
-	size_t size() const {
+	size_t size() const
+	{
 		return ssize;
 	}
 
-	hashArr<T>& data() {
+	hashArr &data()
+	{
 		return hashTable;
 	}
 
 	float loadFactor() const { return (float)this->size() / this->hashTable.size(); }
 
-	void swap(HashTable& other) {
+	void swap(HashTable &other)
+	{
 		this->hashTable.swap(other.hashTable);
 		cor::swap(this->ssize, other.ssize);
 	}
 	void print()
 	{
-		//for (auto &node : this->hashTable)
+		// for (auto &node : this->hashTable)
 		//{
 		//	if (node == nullptr)
 		//	{

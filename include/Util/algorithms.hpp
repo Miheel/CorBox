@@ -1,12 +1,14 @@
 #ifndef ALGORITHMS_HPP
 #define ALGORITHMS_HPP
 
-#include "slice.hpp"
+#include "range.hpp"
 
-namespace cor {
+namespace cor
+{
 
-	template<typename InIt, typename OutIt, typename Func>
-	inline OutIt transform(const InIt first, const InIt last, OutIt dest, Func func) {
+	template <typename InIt, typename OutIt, typename Func>
+	inline OutIt transform(const InIt first, const InIt last, OutIt dest, Func func)
+	{
 		for (auto tempFirst = first; tempFirst != last; tempFirst++, dest++)
 		{
 			*dest = func(*tempFirst);
@@ -14,8 +16,9 @@ namespace cor {
 		return dest;
 	}
 
-	template<typename T>
-	bool cycleDetect(const T list) {
+	template <typename T>
+	bool cycleDetect(const T list)
+	{
 
 		if (list->begin() == list->end())
 		{
@@ -37,8 +40,8 @@ namespace cor {
 		return false;
 	}
 
-	template<class T>
-	T search(cor::Slice<T> slice, int value) 
+	template <class T>
+	T &search(cor::Slice<T> slice, const T &value)
 	{
 		for (auto It = slice.begin(); It != slice.end(); It++)
 		{
@@ -50,9 +53,9 @@ namespace cor {
 		return *slice.end();
 	}
 
-	size_t strlen(const char* str);
+	size_t strlen(const char *str);
 
-	int strcmp(const char* lhs, const char* rhs);
+	int strcmp(const char *lhs, const char *rhs);
 
 } // !namespace cor
 

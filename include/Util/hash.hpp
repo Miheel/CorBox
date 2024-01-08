@@ -2,12 +2,14 @@
 #define HASH_HPP
 #include "type_traits.hpp"
 
-namespace cor {
-	constexpr size_t FVN_OFFSET_BASIS = 14695981039346656037;
-	constexpr size_t FNV_prime = 1099511628211;
+namespace cor
+{
+	constexpr size_t FNV_OFFSET_BASIS = 14695981039346656037ull;
+	constexpr size_t FNV_prime = 1099511628211ull;
 
-	size_t hash_FNV_1a(const unsigned char* first, size_t count) {
-		size_t val = FVN_OFFSET_BASIS;
+	size_t hash_FNV_1a(const unsigned char *first, size_t count)
+	{
+		size_t val = FNV_OFFSET_BASIS;
 		for (size_t i = 0; i < count; i++)
 		{
 			val *= FNV_prime;
@@ -16,36 +18,42 @@ namespace cor {
 		return val;
 	}
 
-	template<typename T>
-	size_t hash_funk(T key) {
+	template <typename T>
+	size_t hash_funk(T key)
+	{
 
-		return hash_FNV_1a(&reinterpret_cast<const unsigned char&>(key), sizeof(T));
+		return hash_FNV_1a(&reinterpret_cast<const unsigned char &>(key), sizeof(T));
 	}
 
-	template<typename T>
-	size_t hash_funk_arr(T key, size_t count) {
-		return hash_FNV_1a(&reinterpret_cast<const unsigned char&>(key), count * sizeof(T));
+	template <typename T>
+	size_t hash_funk_arr(T key, size_t count)
+	{
+		return hash_FNV_1a(&reinterpret_cast<const unsigned char &>(key), count * sizeof(T));
 	}
 
-	template<class T, bool enabled>
+	template <class T, bool enabled>
 	struct hash_cond
 	{
-		size_t operator()(T key) {
+		size_t operator()(T key)
+		{
 			return hash_funk(key);
 		}
 	};
-	template<class T>
+	template <class T>
 	class hash_cond<T, false>
-	{};
-
-	template<typename T>
-	struct Hash :hash_cond<T, IsIntegral_v<T>>
-	{};
-
-	template<typename T>
-	struct Hash<T*>
 	{
-		size_t operator()(T* key) {
+	};
+
+	template <typename T>
+	struct Hash : hash_cond<T, IsIntegral_v<T>>
+	{
+	};
+
+	template <typename T>
+	struct Hash<T *>
+	{
+		size_t operator()(T *key)
+		{
 			return hash_funk(key);
 		}
 	};

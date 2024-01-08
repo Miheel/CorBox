@@ -1,96 +1,110 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
+#include <iostream>
 #include "buffer.hpp"
-#include "slice.hpp"
-namespace cor {
+#include "range.hpp"
+namespace cor
+{
 
-	template<typename T>
+	template <typename T>
 	class Array
 	{
 	public:
-		using reference = T & ;
+		using reference = T &;
 		using const_reference = const T &;
-		using iterator = T * ;
-		using const_iterator = const T*;
+		using iterator = T *;
+		using const_iterator = const T *;
 
-		//constructors
+		// constructors
 		constexpr Array() : buffer(0) {}
-		constexpr  Array(size_ty size)
-			:buffer(size), currentSize(size)
-		{}
-		constexpr Array(const T* source, size_ty size)
-			:buffer(source, size), currentSize(size)
-		{}
-		constexpr Array(size_t size, const T& val)
-			:Array(size) {
+		constexpr Array(size_ty size)
+			: buffer(size), currentSize(size)
+		{
+		}
+		constexpr Array(const T *source, size_ty size)
+			: buffer(source, size), currentSize(size)
+		{
+		}
+		constexpr Array(size_t size, const T &val)
+			: Array(size)
+		{
 			for (size_t i = 0; i < size; i++)
 			{
 				this->buffer[i] = val;
 			}
 		}
-		constexpr Array(const Array& rhs) //copy constructor
-			:Array(rhs.data(), rhs.size())
-		{}
-		constexpr Array(Array&& rhs) { //move constructor
+		constexpr Array(const Array &rhs) // copy constructor
+			: Array(rhs.data(), rhs.size())
+		{
+		}
+		constexpr Array(Array &&rhs) noexcept
+		{ // move constructor
 			this->swap(rhs);
 		}
-		constexpr Array(std::initializer_list<T> init) 
-			:buffer(init), currentSize(init.size())
-		{}
+		constexpr Array(std::initializer_list<T> init)
+			: buffer(init), currentSize(init.size())
+		{
+		}
 
-		//Assign
-		constexpr Array& operator= (const Array& rhs) { //copy assign
+		// Assign
+		constexpr Array &operator=(const Array &rhs)
+		{ // copy assign
 			auto temp(rhs);
 			this->swap(temp);
 			return *this;
 		}
-		constexpr Array& operator= (Array&& rhs) { //move assign
+		constexpr Array &operator=(Array &&rhs) noexcept
+		{ // move assign
 			this->swap(rhs);
 			return *this;
 		}
 
-		//Access
-		constexpr reference operator[] (size_ty index) { return buffer[index]; }
-		constexpr const_reference operator[] (size_ty index) const { return buffer[index]; }
+		// Access
+		constexpr reference operator[](size_ty index) { return buffer[index]; }
+		constexpr const_reference operator[](size_ty index) const { return buffer[index]; }
 
 		constexpr reference at(size_ty index) { return buffer[index]; }
 		constexpr const_reference at(size_ty index) const { return buffer[index]; }
 
-
 		constexpr iterator data() { return buffer.data(); }
 		constexpr const_iterator data() const { return buffer.data(); }
 
-		//Capacity
+		// Capacity
 		constexpr size_ty size() const { return currentSize; }
 		constexpr bool empty() { return currentSize == 0 ? true : false; }
 		constexpr size_ty capacity() { return buffer.size(); }
-		constexpr void reserve(size_ty newSize) {
+		constexpr void reserve(size_ty newSize)
+		{
 			if (newSize > this->capacity())
 			{
 				realoc(newSize);
 			}
 		}
-		constexpr void shrinkToFit() {
+		constexpr void shrinkToFit()
+		{
 			realoc(currentSize);
 		}
 
-		//Modifiers
-		constexpr void clear() {
-			for  (auto &e : buffer)
+		// Modifiers
+		constexpr void clear()
+		{
+			for (auto &e : buffer)
 			{
 				e = T();
 			}
 			currentSize = 0;
 		}
-		constexpr void pushBack(const T& value) {
+		constexpr void pushBack(const T &value)
+		{
 			if (this->size() == this->capacity())
 			{
 				expand();
 			}
 			buffer[currentSize++] = value;
 		}
-		constexpr void pushBack(T&& value) {
+		constexpr void pushBack(T &&value)
+		{
 			if (this->size() == this->capacity())
 			{
 				expand();
@@ -98,7 +112,8 @@ namespace cor {
 			buffer[currentSize++] = cor::isMovable(value);
 		}
 		constexpr void popBack() { --currentSize; }
-		constexpr void resize(size_ty newSize) {
+		constexpr void resize(size_ty newSize)
+		{
 			Array newArr(newSize);
 
 			auto count = newSize < this->size() ? newSize : this->size();
@@ -111,31 +126,36 @@ namespace cor {
 			this->swap(newArr);
 		}
 
-		//Iterators
+		// Iterators
 		constexpr const_iterator begin() const { return buffer.begin(); }
 		constexpr const_iterator end() const { return buffer.begin() + currentSize; }
 
 		constexpr iterator begin() { return buffer.begin(); }
 		constexpr iterator end() { return buffer.begin() + currentSize; }
 
-		constexpr Slice<T> slice() {
+		constexpr Slice<T> slice()
+		{
 			return Slice<T>(this->begin(), this->end());
 		}
-		constexpr Slice<T> slice(size_t first, size_t last) {
+		constexpr Slice<T> slice(size_t first, size_t last)
+		{
 			return Slice<T>(this->begin() + first, this->begin() + last);
 		}
 
-		~Array() {
+		~Array()
+		{
 			currentSize = 0;
 		}
 
-		constexpr void swap(Array& other) {
+		constexpr void swap(Array &other)
+		{
 			this->buffer.swap(other.buffer);
 			cor::swap(this->currentSize, other.currentSize);
 		}
 
 	private:
-		constexpr void expand() {
+		constexpr void expand()
+		{
 			size_ty newSize = static_cast<size_ty>(this->capacity() * 1.5);
 			if (this->capacity() == 0)
 			{
@@ -148,7 +168,8 @@ namespace cor {
 
 			realoc(newSize);
 		}
-		constexpr void realoc(size_ty newSize) {
+		constexpr void realoc(size_ty newSize)
+		{
 			Buffer<T> newBuffer(newSize);
 			for (size_t i = 0; i < newSize; i++)
 			{
@@ -161,8 +182,9 @@ namespace cor {
 		size_ty currentSize = 0;
 	};
 
-	template<class T>
-	void PrintArr(const Array<T>& arr) {
+	template <class T>
+	void PrintArr(const Array<T> &arr)
+	{
 		for (auto &e : arr)
 		{
 			std::cout << e << ", ";
@@ -170,8 +192,9 @@ namespace cor {
 		std::cout << "\n";
 	}
 
-	template<class T>
-	void PrintArr(const Array<Array<T>>& arr) {
+	template <class T>
+	void PrintArr(const Array<Array<T>> &arr)
+	{
 
 		for (size_t row = 0; row < arr.size(); row++)
 		{
@@ -182,8 +205,6 @@ namespace cor {
 			std::cout << "\n";
 		}
 	}
-
-
 
 } // !namespace cor
 

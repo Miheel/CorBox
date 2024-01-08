@@ -8,26 +8,34 @@
 #include "type_traits.hpp"
 #include "types.hpp"
 
-namespace cor {
+namespace cor
+{
 
-	template<class T, class Deleter = mem::Deleter<T>> /*std::default_delete<T>*/
+	template <class T, class Deleter = mem::Deleter<T>> /*std::default_delete<T>*/
 	struct Control_block
 	{
 	private:
-		T* pointer = nullptr;
+		T *pointer = nullptr;
 		Deleter deleter;
 		long use_count = 0;
 		long weak_count = 0;
 
-
 	public:
 		Control_block() = default;
-		Control_block(T* ptr) :pointer(ptr) { use_count++; }
-		Control_block(T* ptr, Deleter deleter) :pointer(ptr), deleter(deleter) {}
-		Control_block(Deleter deleter) :deleter(deleter) {}
+		Control_block(T *ptr) : pointer(ptr) { use_count++; }
+		Control_block(T *ptr, Deleter deleter) : pointer(ptr), deleter(deleter) {}
+		Control_block(Deleter deleter) : deleter(deleter) {}
 
-		void decRefCount() { if (use_count > 0)use_count--; }
-		void decWeakCount() { if (weak_count > 0)weak_count--; }
+		void decRefCount()
+		{
+			if (use_count > 0)
+				use_count--;
+		}
+		void decWeakCount()
+		{
+			if (weak_count > 0)
+				weak_count--;
+		}
 
 		void incRefCount() { use_count++; }
 		void incWeakCount() { weak_count++; }
@@ -40,22 +48,23 @@ namespace cor {
 		~Control_block() = default;
 	};
 
-	template<class T>
+	template <class T>
 	class SharedPtr
 	{
 	public:
 		using Elem_t = std::remove_extent_t<T> /*cor::RemoveExtent_T<T>*/;
-		using Elem_T_ptr = Elem_t * ;
-		using Elem_t_ref = Elem_t & ;
-		using C_block_ptr = Control_block<Elem_t>*;
+		using Elem_T_ptr = Elem_t *;
+		using Elem_t_ref = Elem_t &;
+		using C_block_ptr = Control_block<Elem_t> *;
 
 	private:
-		Elem_T_ptr pointer;
-		C_block_ptr c_block;
+		Elem_T_ptr pointer = nullptr;
+		C_block_ptr c_block = nullptr;
 
 		C_block_ptr GetCblock() { return c_block; }
 
-		void freemem() {
+		void freemem()
+		{
 			if (c_block)
 			{
 				c_block->decRefCount();
@@ -69,18 +78,19 @@ namespace cor {
 		}
 
 	public:
-		//Constructors
+		// Constructors
 
-		constexpr SharedPtr() noexcept :pointer(nullptr), c_block(nullptr) {}
-		constexpr SharedPtr(std::nullptr_t) noexcept :pointer(nullptr), c_block(nullptr) {}
+		constexpr SharedPtr() noexcept : pointer(nullptr), c_block(nullptr) {}
+		constexpr SharedPtr(std::nullptr_t) noexcept : pointer(nullptr), c_block(nullptr) {}
 
-		template< class Y>
-		SharedPtr(Y* ptr) : pointer(ptr), c_block(mem::allocate<Control_block<Y>>(pointer)) {}
+		template <class Y>
+		SharedPtr(Y *ptr) : pointer(ptr), c_block(mem::allocate<Control_block<Y>>(pointer)) {}
 
-		template< class Y, class Deleter >
-		SharedPtr(Y* ptr, Deleter d) : pointer(ptr), c_block(ptr, d) {}
+		template <class Y, class Deleter>
+		SharedPtr(Y *ptr, Deleter d) : pointer(ptr), c_block(ptr, d) {}
 
-		SharedPtr(const SharedPtr& other) {
+		SharedPtr(const SharedPtr &other)
+		{
 			if (this != &other && other)
 			{
 				this->c_block = other.c_block;
@@ -89,26 +99,30 @@ namespace cor {
 				this->c_block->decWeakCount();
 			}
 		}
-		SharedPtr(SharedPtr&& other) {
+		SharedPtr(SharedPtr &&other)
+		{
 			if (this != &other && other)
 			{
 				this->swap(other);
 			}
 		}
 
-		//assigns
-		SharedPtr& operator =(const SharedPtr& other) {
+		// assigns
+		SharedPtr &operator=(const SharedPtr &other)
+		{
 			SharedPtr temp(other);
 			temp.swap(*this);
 			return *this;
 		}
-		SharedPtr& operator =(SharedPtr&& other) noexcept {
+		SharedPtr &operator=(SharedPtr &&other) noexcept
+		{
 			SharedPtr(cor::isMovable(other)).swap(*this);
 			return *this;
 		}
 
-		//Modifiers
-		void reset() noexcept {
+		// Modifiers
+		void reset() noexcept
+		{
 
 			this->freemem();
 
@@ -116,40 +130,48 @@ namespace cor {
 			c_block = nullptr;
 		}
 
-		template< class Y >
-		void reset(Y* ptr) {
+		template <class Y>
+		void reset(Y *ptr)
+		{
 			SharedPtr(ptr).swap(*this);
 		}
 
-		template< class Y, class Deleter >
-		void reset(Y* ptr, Deleter d) {
+		template <class Y, class Deleter>
+		void reset(Y *ptr, Deleter d)
+		{
 			SharedPtr(ptr, d).swap(*this);
 		}
 
-		void swap(SharedPtr& other) noexcept {
+		void swap(SharedPtr &other) noexcept
+		{
 			cor::swap(this->pointer, other.pointer);
 			cor::swap(this->c_block, other.c_block);
 		}
 
-		//Observers
-		Elem_T_ptr get() const noexcept {
+		// Observers
+		Elem_T_ptr get() const noexcept
+		{
 			return pointer;
 		}
 
-		//dereferences pointer to the managed object
-		Elem_T_ptr operator->() const noexcept {
+		// dereferences pointer to the managed object
+		Elem_T_ptr operator->() const noexcept
+		{
 			return get();
 		}
-		Elem_t_ref operator*() const noexcept {
+		Elem_t_ref operator*() const noexcept
+		{
 			return *get();
 		}
 
-		//Array version, unique_ptr<T[]>
-		Elem_t_ref operator[](cor::size_t i) const {
+		// Array version, unique_ptr<T[]>
+		Elem_t_ref operator[](cor::size_t i) const
+		{
 			return this->get()[i];
 		}
 
-		long useCount() const noexcept {
+		long useCount() const noexcept
+		{
 			if (c_block)
 			{
 				return c_block->GetUseCount();
@@ -157,42 +179,45 @@ namespace cor {
 			return 0;
 		}
 
-		bool unique() const noexcept {
+		bool unique() const noexcept
+		{
 			return this->useCount() == 1;
 		}
 
-		explicit operator bool() const noexcept {
+		explicit operator bool() const noexcept
+		{
 			return this->get() != nullptr;
 		}
 
-		template< class Y >
-		bool ownerBefore(const SharedPtr<Y>& other) {
+		template <class Y>
+		bool ownerBefore(const SharedPtr<Y> &other)
+		{
 			return c_block < other.GetCblock();
 		}
 
-		//Destructor
-		~SharedPtr() {
+		// Destructor
+		~SharedPtr()
+		{
 			this->freemem();
 		}
 	};
 
-	template<class T, class ...Args>
-	constexpr SharedPtr<T> makeShared(Args && ...args)
+	template <class T, class... Args>
+	constexpr SharedPtr<T> makeShared(Args &&...args)
 	{
-		void* storage = mem::allocateRaw<mem::align_of<SharedPtr<T>>>(sizeof(SharedPtr<T>) + sizeof(T));
-		//void* storage = operator new(sizeof(SharedPtr<T>) + sizeof(T));
-		//return SharedPtr<T>(::new (storage) T(std::forward<Args>(args)...));
+		void *storage = mem::allocateRaw<mem::align_of<SharedPtr<T>>>(sizeof(SharedPtr<T>) + sizeof(T));
+		// void* storage = operator new(sizeof(SharedPtr<T>) + sizeof(T));
+		// return SharedPtr<T>(::new (storage) T(std::forward<Args>(args)...));
 		return SharedPtr<T>(mem::allocatePlace<T>(storage, args...));
 	}
 
-
-	//template< class T >
-	//constexpr SharedPtr<T> makeUnique(cor::size_t size) {
+	// template< class T >
+	// constexpr SharedPtr<T> makeUnique(cor::size_t size) {
 	//	return SharedPtr<T>(new cor::RemoveExtent_T<T>[size]);
-	//}
+	// }
 
-	template<class T>
-	void swap(SharedPtr<T>& lhs, SharedPtr<T>& rhs) noexcept
+	template <class T>
+	void swap(SharedPtr<T> &lhs, SharedPtr<T> &rhs) noexcept
 	{
 		lhs.swap(rhs);
 	}
