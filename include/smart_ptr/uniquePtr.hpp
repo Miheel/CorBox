@@ -169,7 +169,7 @@ namespace cor
 				this->getDeleter()(oldPtr);
 			}
 		}
-		void reset(std::nullptr_t = nullptr) noexcept
+		void reset(cor::nullType = nullptr) noexcept
 		{
 			reset(Pointer());
 		}

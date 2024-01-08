@@ -81,7 +81,7 @@ namespace cor
 		// Constructors
 
 		constexpr SharedPtr() noexcept : pointer(nullptr), c_block(nullptr) {}
-		constexpr SharedPtr(std::nullptr_t) noexcept : pointer(nullptr), c_block(nullptr) {}
+		constexpr SharedPtr(cor::nullType) noexcept : pointer(nullptr), c_block(nullptr) {}
 
 		template <class Y>
 		SharedPtr(Y *ptr) : pointer(ptr), c_block(mem::allocate<Control_block<Y>>(pointer)) {}

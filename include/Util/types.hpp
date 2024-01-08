@@ -3,7 +3,7 @@
 
 namespace cor
 {
-	using nullptr_t = decltype(nullptr);
+	using nullType = decltype(nullptr);
 	typedef unsigned long long usize;
 
 }
