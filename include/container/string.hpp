@@ -6,10 +6,10 @@
 #include "utility.hpp"
 #include "memory.hpp"
 #include "range.hpp"
+#include "types.hpp"
 
 namespace cor
 {
-
 	class String
 	{
 	public:
@@ -20,9 +20,9 @@ namespace cor
 
 		// CTOR
 		String() = default;
-		String(size_t count, char chr);
+		String(usize count, char chr);
 		String(const_pointer s);
-		String(const_pointer s, size_t count);
+		String(const_pointer s, usize count);
 		String(const String &other);
 		String(String &&other) noexcept;
 		String(std::initializer_list<char> ilist);
@@ -34,15 +34,15 @@ namespace cor
 		String &operator=(std::initializer_list<char> ilist);
 
 		// ELEM ACCESS
-		reference operator[](size_t index);
-		const_reference operator[](size_t index) const;
+		reference operator[](usize index);
+		const_reference operator[](usize index) const;
 		reference front();
 		const_reference front() const;
 		reference back();
 		const_reference back() const;
 		pointer data() noexcept;
 		const_pointer data() const noexcept;
-		Slice<char> slice(size_t first, size_t last);
+		Slice<char> slice(usize first, usize last);
 		Slice<char> slice();
 
 		// ITER
@@ -52,7 +52,7 @@ namespace cor
 		const_pointer end() const noexcept;
 
 		// CAP
-		constexpr size_t size() const noexcept;
+		constexpr usize size() const noexcept;
 		constexpr bool empty() const noexcept
 		{
 			return size() == 0;
@@ -65,7 +65,7 @@ namespace cor
 
 	private:
 		mem::Allocator<char> allocator;
-		size_t ssize = 0;
+		usize ssize = 0;
 		pointer ptr = nullptr;
 	};
 

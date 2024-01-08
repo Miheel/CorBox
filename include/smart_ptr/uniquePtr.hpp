@@ -203,7 +203,7 @@ namespace cor
 			return *get();
 		}
 
-		Elem_t &operator[](cor::size_t i) const
+		Elem_t &operator[](cor::usize i) const
 		{
 			return this->get()[i];
 		}
@@ -231,7 +231,7 @@ namespace cor
 
 	// array type
 	template <class T, cor::EnableIf_T<cor::IsArray_T<T> && std::extent_v<T> == 0, bool> = true>
-	constexpr UniquePtr<T> makeUnique(cor::size_t size)
+	constexpr UniquePtr<T> makeUnique(cor::usize size)
 	{
 		return UniquePtr<T>(mem::allocate_r_extent<T>(size));
 	}

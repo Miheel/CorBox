@@ -1,6 +1,8 @@
 #ifndef RANGE_HPP
 #define RANGE_HPP
 
+#include "types.hpp"
+
 namespace cor
 {
 
@@ -8,7 +10,7 @@ namespace cor
 	class Slice
 	{
 	public:
-		constexpr Slice(const T *s, size_t count)
+		constexpr Slice(const T *s, usize count)
 			: first(s), ssize(count)
 		{
 		}
@@ -18,11 +20,11 @@ namespace cor
 		{
 		}
 
-		size_t size() const { return ssize; }
+		usize size() const { return ssize; }
 		bool empty() const { return first == nullptr; }
 
-		T &operator[](size_t index) const { return first[index]; }
-		T &at(size_t index) const { return first[index]; }
+		T &operator[](usize index) const { return first[index]; }
+		T &at(usize index) const { return first[index]; }
 
 		const T &front() const { return *first; }
 		const T &back() const { return *(first + ssize - 1); }
@@ -40,14 +42,14 @@ namespace cor
 
 	private:
 		T *first = nullptr;
-		size_t ssize;
+		usize ssize;
 	};
 
 	template <class T>
 	class View
 	{
 	public:
-		constexpr View(const T *s, size_t count)
+		constexpr View(const T *s, usize count)
 			: first(s), last(s + count)
 		{
 		}
@@ -57,11 +59,11 @@ namespace cor
 		{
 		}
 
-		size_t size() const { return last - first; }
+		usize size() const { return last - first; }
 		bool empty() const { return first == nullptr; }
 
-		const T &operator[](size_t index) const { return first[index]; }
-		const T &at(size_t index) const { return first[index]; }
+		const T &operator[](usize index) const { return first[index]; }
+		const T &at(usize index) const { return first[index]; }
 
 		const T &front() const { return *first; }
 		const T &back() const { return *(last - 1); }

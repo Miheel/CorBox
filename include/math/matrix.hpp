@@ -9,7 +9,7 @@
 namespace cor
 {
 
-	template <typename T, size_t row, size_t col>
+	template <typename T, usize row, usize col>
 	class MatX
 	{
 
@@ -21,61 +21,61 @@ namespace cor
 			data = list;
 		}
 
-		T &operator()(size_t rowpos, size_t colpos)
+		T &operator()(usize rowpos, usize colpos)
 		{
 			return data[rowpos * col + colpos];
 		}
-		const T &operator()(size_t rowpos, size_t colpos) const
+		const T &operator()(usize rowpos, usize colpos) const
 		{
 			return data[rowpos * col + colpos];
 		}
 
-		T &operator[](size_t pos) { return data[pos]; }
-		const T &operator[](size_t pos) const { return data[pos]; }
+		T &operator[](usize pos) { return data[pos]; }
+		const T &operator[](usize pos) const { return data[pos]; }
 
-		template <size_t Lrow, size_t Lcol>
+		template <usize Lrow, usize Lcol>
 		MatX operator+(MatX<T, Lrow, Lcol> &lhs)
 		{
 			assert((col == Lcol && row == Lrow) && "mat 1 and mat 2 must have equal # of col and row");
-			for (size_t i = 0; i < row * col; i++)
+			for (usize i = 0; i < row * col; i++)
 			{
 				data[i] += lhs[i];
 			}
 			return *this;
 		}
 
-		template <size_t Lrow, size_t Lcol>
+		template <usize Lrow, usize Lcol>
 		MatX operator-(MatX<T, Lrow, Lcol> &lhs)
 		{
 			assert((col == Lcol && row == Lrow) && "mat 1 and mat 2 must have equal # of col and row");
-			for (size_t i = 0; i < row * col; i++)
+			for (usize i = 0; i < row * col; i++)
 			{
 				data[i] -= lhs[i];
 			}
 			return *this;
 		}
 
-		MatX operator*(size_t scalar)
+		MatX operator*(usize scalar)
 		{
-			for (size_t i = 0; i < row * col; i++)
+			for (usize i = 0; i < row * col; i++)
 			{
 				data[i] *= scalar;
 			}
 			return *this;
 		}
 
-		template <size_t Lrow, size_t Lcol>
+		template <usize Lrow, usize Lcol>
 		MatX<T, row, Lcol> operator*(MatX<T, Lrow, Lcol> &lhs)
 		{
 			assert((col == Lrow) && "mat 1 col must be the same a mat 2 row");
 			MatX<T, row, Lcol> newmat;
 			T sum = 0;
-			for (size_t _row = 0; _row < row; _row++)
+			for (usize _row = 0; _row < row; _row++)
 			{
-				for (size_t _col = 0; _col < Lcol; _col++)
+				for (usize _col = 0; _col < Lcol; _col++)
 				{
 					sum = 0;
-					for (size_t i = 0; i < col; i++)
+					for (usize i = 0; i < col; i++)
 					{
 						sum += data[_row * col + i] * lhs[i * Lcol + _col];
 					}
@@ -111,9 +111,9 @@ namespace cor
 		{
 			MatX<T, col, row> newmat;
 
-			for (size_t _row = 0; _row < row; _row++)
+			for (usize _row = 0; _row < row; _row++)
 			{
-				for (size_t _col = 0; _col < col; _col++)
+				for (usize _col = 0; _col < col; _col++)
 				{
 					newmat[_col * row + _row] = (*this)(_row, _col);
 				}
@@ -124,9 +124,9 @@ namespace cor
 		void print()
 		{
 
-			for (size_t _row = 0; _row < row; _row++)
+			for (usize _row = 0; _row < row; _row++)
 			{
-				for (size_t _col = 0; _col < col; _col++)
+				for (usize _col = 0; _col < col; _col++)
 				{
 					std::cout << data[_row * col + _col] << " ";
 				}
@@ -140,9 +140,9 @@ namespace cor
 
 	using Mat2 = MatX<double, 2, 2>;
 	using Mat3 = MatX<double, 3, 3>;
-	template <typename T, size_t size>
+	template <typename T, usize size>
 	using RowVec = MatX<T, 1, size>;
-	template <typename T, size_t size>
+	template <typename T, usize size>
 	using Vector = MatX<T, size, 1>;
 
 	// template<class>
@@ -150,7 +150,7 @@ namespace cor
 
 	// using Array2D = cor::Array<cor::Array<float>>;
 
-	// Array2D identityMatrix(size_t N);
+	// Array2D identityMatrix(usize N);
 
 	// Array2D matrixAdd2D(Array2D& first, Array2D& second);
 

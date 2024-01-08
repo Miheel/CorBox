@@ -5,16 +5,16 @@ constexpr int cor::sign(long long num)
 	return num < 0 ? -1 : 1;
 }
 
-size_t cor::pow(size_t base, size_t exponent)
+cor::usize cor::pow(usize base, usize exponent)
 {
-	size_t product = 1;
+	usize product = 1;
 	if (exponent == 2)
 	{
 		product = base * base;
 	}
 	else
 	{
-		for (size_t i = 1; i <= exponent; i++)
+		for (usize i = 1; i <= exponent; i++)
 		{
 			product *= base;
 		}
@@ -22,9 +22,9 @@ size_t cor::pow(size_t base, size_t exponent)
 	return product;
 }
 
-std::map<size_t, size_t> cor::primefactorization(size_t n)
+std::map<cor::usize, cor::usize> cor::primefactorization(usize n)
 {
-	std::map<size_t, size_t> pFacMap;
+	std::map<usize, usize> pFacMap;
 	while (n % 2 == 0)
 	{
 		if (pFacMap.find(2) != pFacMap.end())
@@ -38,7 +38,7 @@ std::map<size_t, size_t> cor::primefactorization(size_t n)
 		n = n / 2;
 	}
 
-	for (size_t i = 3; i <= sqrt(n); i++)
+	for (usize i = 3; i <= sqrt(n); i++)
 	{
 		while (n % i == 0)
 		{
@@ -68,10 +68,10 @@ std::map<size_t, size_t> cor::primefactorization(size_t n)
 	return pFacMap;
 }
 
-size_t cor::phiFunk(size_t n)
+cor::usize cor::phiFunk(usize n)
 {
 	auto factors = primefactorization(n);
-	size_t product = 1;
+	usize product = 1;
 	for (auto &e : factors)
 	{
 		product *= cor::pow(e.first, e.second - 1) * (e.first - 1);

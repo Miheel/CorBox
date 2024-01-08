@@ -3,8 +3,8 @@
 
 namespace cor
 {
-
-	typedef unsigned long long size_t;
+	using nullptr_t = decltype(nullptr);
+	typedef unsigned long long usize;
 
 }
 #endif // !TYPES_HPP

@@ -48,7 +48,7 @@ namespace cor
 		Linked_list<T> &operator+=(const Linked_list &rhs);
 
 		// inserting elements
-		void insert(T value, size_t pos);
+		void insert(T value, usize pos);
 		void push_front(T value);
 		void push_back(T value);
 		void add_node(pointer node);
@@ -58,7 +58,7 @@ namespace cor
 		pointer end() { return this->tail; }
 		const_pointer begin() const { return this->head; }
 		const_pointer end() const { return this->tail; }
-		pointer operator[](size_t pos) const
+		pointer operator[](usize pos) const
 		{
 			pointer foundValue = 0;
 			node_t *walker = head;
@@ -69,7 +69,7 @@ namespace cor
 			}
 			else
 			{
-				for (size_t i = 0; i <= pos; i++, walker = walker->next)
+				for (usize i = 0; i <= pos; i++, walker = walker->next)
 				{
 					foundValue = walker;
 				}
@@ -83,15 +83,15 @@ namespace cor
 		const_reference back() const { return this->tail->value; }
 		reference front() { return this->head->value; }
 		reference back() { return this->tail->value; }
-		T at(size_t pos) const;
+		T at(usize pos) const;
 
 		// removing elements
-		void remove(size_t pos);
+		void remove(usize pos);
 		void pop_front();
 		void pop_back();
 
 		// informational
-		size_t size() const { return this->nrOfNodes; }
+		usize size() const { return this->nrOfNodes; }
 		bool is_empty() const { return this->nrOfNodes == 0 ? true : false; }
 		bool is_order() const;
 
@@ -107,7 +107,7 @@ namespace cor
 	private:
 		node_t *head;
 		node_t *tail;
-		size_t nrOfNodes;
+		usize nrOfNodes;
 
 		void copy(Linked_list const &other)
 		{
@@ -176,7 +176,7 @@ namespace cor
 	}
 
 	template <typename T>
-	inline void Linked_list<T>::insert(T value, size_t pos)
+	inline void Linked_list<T>::insert(T value, usize pos)
 	{
 		node_t *walker = head;
 		walker = this->head;
@@ -191,7 +191,7 @@ namespace cor
 		}
 		else
 		{
-			for (size_t i = 0; i <= pos && walker != nullptr; i++)
+			for (usize i = 0; i <= pos && walker != nullptr; i++)
 			{
 				if (i == pos)
 				{
@@ -258,7 +258,7 @@ namespace cor
 	}
 
 	template <typename T>
-	inline T Linked_list<T>::at(size_t pos) const
+	inline T Linked_list<T>::at(usize pos) const
 	{
 		T foundValue = 0;
 		node_t *walker = head;
@@ -269,7 +269,7 @@ namespace cor
 		}
 		else
 		{
-			for (size_t i = 0; i <= pos; i++, walker = walker->next)
+			for (usize i = 0; i <= pos; i++, walker = walker->next)
 			{
 				foundValue = walker->value;
 			}
@@ -279,7 +279,7 @@ namespace cor
 	}
 
 	template <typename T>
-	inline void Linked_list<T>::remove(size_t pos)
+	inline void Linked_list<T>::remove(usize pos)
 	{
 		node_t *walker = head;
 		walker = this->head;
@@ -294,7 +294,7 @@ namespace cor
 		}
 		else
 		{
-			for (size_t i = 0; i <= pos && walker != nullptr; i++)
+			for (usize i = 0; i <= pos && walker != nullptr; i++)
 			{
 				if (i == pos)
 				{
@@ -496,7 +496,7 @@ namespace cor
 		{
 			auto walker_l = lhs.begin(), walker_r = rhs.begin();
 
-			for (size_t i = 0; i < lhs.size(); i++)
+			for (usize i = 0; i < lhs.size(); i++)
 			{
 				if (walker_l->value == walker_r->value)
 				{

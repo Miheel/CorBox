@@ -10,7 +10,7 @@
 namespace cor
 {
 
-	template <typename T, cor::size_t _size>
+	template <typename T, cor::usize _size>
 	class Static_Array
 	{
 	public:
@@ -23,8 +23,8 @@ namespace cor
 		}
 
 		// elem access
-		T &operator[](cor::size_t pos) { return elems[pos]; }
-		const T &operator[](cor::size_t pos) const { return elems[pos]; }
+		T &operator[](cor::usize pos) { return elems[pos]; }
+		const T &operator[](cor::usize pos) const { return elems[pos]; }
 
 		T &front() { return elems[0]; }
 		const T &front() const { return elems[0]; }
@@ -44,12 +44,12 @@ namespace cor
 
 		// capacity
 		[[nodiscard]] constexpr bool empty() const noexcept { return false; }
-		constexpr cor::size_t size() const noexcept { return _size; }
+		constexpr cor::usize size() const noexcept { return _size; }
 
 		// operations
 		void fill(const T &val)
 		{
-			for (size_t i = 0; i < _size; i++)
+			for (usize i = 0; i < _size; i++)
 			{
 				elems[i] = val;
 			}

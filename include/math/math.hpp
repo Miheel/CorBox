@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include "types.hpp"
 
 namespace cor
 {
@@ -16,18 +17,18 @@ namespace cor
 
 	constexpr int sign(long long num);
 
-	size_t pow(size_t base, size_t exponent);
+	usize pow(usize base, usize exponent);
 
-	std::map<size_t, size_t> primefactorization(size_t n);
+	std::map<usize, usize> primefactorization(usize n);
 
-	size_t phiFunk(size_t n);
+	usize phiFunk(usize n);
 
 	template <class T, class... Args>
-	size_t lcm(const T num1, const T num2, Args... nums)
+	usize lcm(const T num1, const T num2, Args... nums)
 	{
-		std::vector<std::map<size_t, size_t>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
+		std::vector<std::map<usize, usize>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
 		auto newFactors = primefactorization(num1);
-		size_t product = 1;
+		usize product = 1;
 		for (auto &map : primeFactorVec)
 		{
 
@@ -55,7 +56,7 @@ namespace cor
 		return product;
 	}
 
-	// size_t gcd(const int n1, const int n2) {
+	// usize gcd(const int n1, const int n2) {
 	//
 	//	if (n2 == 0)
 	//		return n1;
@@ -63,7 +64,7 @@ namespace cor
 	//	gcd(n2, n1 % n2);
 	// }
 	//
-	// size_t egcd(const int n1, const int n2) {
+	// usize egcd(const int n1, const int n2) {
 	//
 	//	if (n2 == 0)
 	//		return n1;

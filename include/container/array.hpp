@@ -26,10 +26,10 @@ namespace cor
 			: buffer(source, size), currentSize(size)
 		{
 		}
-		constexpr Array(size_t size, const T &val)
+		constexpr Array(usize size, const T &val)
 			: Array(size)
 		{
-			for (size_t i = 0; i < size; i++)
+			for (usize i = 0; i < size; i++)
 			{
 				this->buffer[i] = val;
 			}
@@ -118,7 +118,7 @@ namespace cor
 
 			auto count = newSize < this->size() ? newSize : this->size();
 
-			for (size_t i = 0; i < count; i++)
+			for (usize i = 0; i < count; i++)
 			{
 				newArr[i] = cor::isMovable(buffer[i]);
 			}
@@ -137,7 +137,7 @@ namespace cor
 		{
 			return Slice<T>(this->begin(), this->end());
 		}
-		constexpr Slice<T> slice(size_t first, size_t last)
+		constexpr Slice<T> slice(usize first, usize last)
 		{
 			return Slice<T>(this->begin() + first, this->begin() + last);
 		}
@@ -171,7 +171,7 @@ namespace cor
 		constexpr void realoc(size_ty newSize)
 		{
 			Buffer<T> newBuffer(newSize);
-			for (size_t i = 0; i < newSize; i++)
+			for (usize i = 0; i < newSize; i++)
 			{
 				newBuffer[i] = buffer[i];
 			}
@@ -196,9 +196,9 @@ namespace cor
 	void PrintArr(const Array<Array<T>> &arr)
 	{
 
-		for (size_t row = 0; row < arr.size(); row++)
+		for (usize row = 0; row < arr.size(); row++)
 		{
-			for (size_t col = 0; col < arr[row].size(); col++)
+			for (usize col = 0; col < arr[row].size(); col++)
 			{
 				std::cout << arr[row][col] << ", ";
 			}

@@ -52,11 +52,11 @@ namespace cor
 		cor::moveSwap(*first, *second);
 	}
 
-	template <class T, size_t N>
+	template <class T, usize N>
 	constexpr void swap(T (&a)[N], T (&b)[N]) noexcept
 	{
 		auto tmp_a = a, tmp_b = b;
-		for (size_t i = 0; i < N; i++)
+		for (usize i = 0; i < N; i++)
 		{
 			iterSwap(tmp_a++, tmp_b++);
 		}

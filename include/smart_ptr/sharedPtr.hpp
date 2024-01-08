@@ -165,7 +165,7 @@ namespace cor
 		}
 
 		// Array version, unique_ptr<T[]>
-		Elem_t_ref operator[](cor::size_t i) const
+		Elem_t_ref operator[](cor::usize i) const
 		{
 			return this->get()[i];
 		}
@@ -212,7 +212,7 @@ namespace cor
 	}
 
 	// template< class T >
-	// constexpr SharedPtr<T> makeUnique(cor::size_t size) {
+	// constexpr SharedPtr<T> makeUnique(cor::usize size) {
 	//	return SharedPtr<T>(new cor::RemoveExtent_T<T>[size]);
 	// }
 

@@ -4,215 +4,220 @@
 #include "uniquePtr.hpp"
 #include "array.hpp"
 #include "hash.hpp"
+#include "types.hpp"
 
-template <typename T>
-class HashTable
+namespace cor
 {
-private:
-	struct Node
+
+	template <typename T>
+	class HashTable
 	{
-		Node(T data) : data(data) {}
-
-		T data;
-		cor::UniquePtr<Node> next = nullptr;
-	};
-
-	using hashArr = cor::Array<cor::UniquePtr<Node>>;
-
-	hashArr hashTable;
-	size_t ssize = 0;
-
-	// load factor for separate chaining between 1 and 3;
-	const float DEFAULT_LOAD_FACTOR = 2;
-
-	size_t hashFunk(T key)
-	{
-		return cor::Hash<T>{}(key) % this->hashTable.size();
-	}
-
-public:
-	HashTable() : hashTable(0) {}
-
-	HashTable(size_t size) : hashTable(size) {}
-
-	template <typename RandomIt>
-	HashTable(RandomIt first, RandomIt last, size_t size)
-	{
-		auto newSize = std::floor(size / 0.5);
-		this->hashTable.resize(int(newSize));
-		for (auto it = first; it != last; it++)
+	private:
+		struct Node
 		{
-			this->insert(*it);
+			Node(T data) : data(data) {}
+
+			T data;
+			cor::UniquePtr<Node> next = nullptr;
+		};
+
+		using hashArr = cor::Array<cor::UniquePtr<Node>>;
+
+		hashArr hashTable;
+		cor::usize ssize = 0;
+
+		// load factor for separate chaining between 1 and 3;
+		const float DEFAULT_LOAD_FACTOR = 2;
+
+		cor::usize hashFunk(T key)
+		{
+			return cor::Hash<T>{}(key) % this->hashTable.size();
 		}
-	}
 
-	HashTable(const HashTable &other) : hashTable(other.hashTable.size())
-	{
-		for (auto &e : other.hashTable)
+	public:
+		HashTable() : hashTable(0) {}
+
+		HashTable(usize size) : hashTable(size) {}
+
+		template <typename RandomIt>
+		HashTable(RandomIt first, RandomIt last, usize size)
 		{
-			if (e)
+			auto newSize = std::floor(size / 0.5);
+			this->hashTable.resize(int(newSize));
+			for (auto it = first; it != last; it++)
 			{
-				auto head = e.get();
-				while (head)
+				this->insert(*it);
+			}
+		}
+
+		HashTable(const HashTable &other) : hashTable(other.hashTable.size())
+		{
+			for (auto &e : other.hashTable)
+			{
+				if (e)
 				{
-					this->insert(head->data);
-					head = head->next.get();
+					auto head = e.get();
+					while (head)
+					{
+						this->insert(head->data);
+						head = head->next.get();
+					}
 				}
 			}
 		}
-	}
 
-	HashTable(HashTable &&other) noexcept
-	{
-		this->swap(other);
-	}
-
-	template <typename InputIt>
-	HashTable(InputIt first, InputIt last) : HashTable(first, last, (last - first)) {}
-
-	HashTable &operator=(const HashTable &other)
-	{
-		HashTable temp(other);
-		this->swap(temp);
-		return *this;
-	}
-	HashTable &operator=(HashTable &&other) noexcept
-	{
-		this->swap(other);
-		return *this;
-	}
-
-	Node *search(T key)
-	{
-		size_t index = this->hashFunk(key);
-
-		auto node = this->hashTable.at(index).get();
-
-		while (node != nullptr)
+		HashTable(HashTable &&other) noexcept
 		{
-			if (node->data == key)
+			this->swap(other);
+		}
+
+		template <typename InputIt>
+		HashTable(InputIt first, InputIt last) : HashTable(first, last, (last - first)) {}
+
+		HashTable &operator=(const HashTable &other)
+		{
+			HashTable temp(other);
+			this->swap(temp);
+			return *this;
+		}
+		HashTable &operator=(HashTable &&other) noexcept
+		{
+			this->swap(other);
+			return *this;
+		}
+
+		Node *search(T key)
+		{
+			usize index = this->hashFunk(key);
+
+			auto node = this->hashTable.at(index).get();
+
+			while (node != nullptr)
 			{
-				return node;
+				if (node->data == key)
+				{
+					return node;
+				}
+				node = node->next.get();
 			}
-			node = node->next.get();
+
+			return nullptr;
 		}
 
-		return nullptr;
-	}
-
-	void insert(T key)
-	{
-		auto newNode = cor::makeUnique<Node>(key);
-
-		size_t index = this->hashFunk(key);
-
-		if (this->hashTable[index] == nullptr)
+		void insert(T key)
 		{
-			this->hashTable[index] = cor::isMovable(newNode);
-			ssize++;
-		}
-		else
-		{
-			auto curr = this->hashTable[index].get();
-			while (curr->next != nullptr)
+			auto newNode = cor::makeUnique<Node>(key);
+
+			usize index = this->hashFunk(key);
+
+			if (this->hashTable[index] == nullptr)
 			{
-				curr = curr->next.get();
-			}
-			curr->next = cor::isMovable(newNode);
-			ssize++;
-		}
-
-		if (loadFactor() > DEFAULT_LOAD_FACTOR)
-		{
-			this->resizeAndRehash(ssize * 2);
-		}
-	}
-
-	void remove(T key)
-	{
-		if (search(key))
-		{
-			size_t index = this->hashFunk(key);
-
-			if (this->hashTable.at(index).get()->data == key)
-			{
-				this->hashTable.at(index) = cor::isMovable(this->hashTable.at(index).get()->next);
+				this->hashTable[index] = cor::isMovable(newNode);
+				ssize++;
 			}
 			else
 			{
-				auto head = this->hashTable.at(index).get();
-				while (head->next && head->next->data != key)
+				auto curr = this->hashTable[index].get();
+				while (curr->next != nullptr)
 				{
-					head = head->next.get();
+					curr = curr->next.get();
 				}
-				if (head->next)
-				{
-					head->next = cor::isMovable(head->next->next);
-				}
+				curr->next = cor::isMovable(newNode);
+				ssize++;
 			}
-			this->ssize--;
-		}
-	}
 
-	void resizeAndRehash(size_t newSize)
-	{
-		HashTable<T> newTable(newSize);
-
-		for (auto &e : hashTable)
-		{
-			if (e)
+			if (loadFactor() > DEFAULT_LOAD_FACTOR)
 			{
-				auto head = e.get();
-				while (head)
-				{
-					newTable.insert(head->data);
-					head = head->next.get();
-				}
+				this->resizeAndRehash(ssize * 2);
 			}
 		}
-		this->swap(newTable);
-	}
 
-	size_t size() const
-	{
-		return ssize;
-	}
+		void remove(T key)
+		{
+			if (search(key))
+			{
+				usize index = this->hashFunk(key);
 
-	hashArr &data()
-	{
-		return hashTable;
-	}
+				if (this->hashTable.at(index).get()->data == key)
+				{
+					this->hashTable.at(index) = cor::isMovable(this->hashTable.at(index).get()->next);
+				}
+				else
+				{
+					auto head = this->hashTable.at(index).get();
+					while (head->next && head->next->data != key)
+					{
+						head = head->next.get();
+					}
+					if (head->next)
+					{
+						head->next = cor::isMovable(head->next->next);
+					}
+				}
+				this->ssize--;
+			}
+		}
 
-	float loadFactor() const { return (float)this->size() / this->hashTable.size(); }
+		void resizeAndRehash(usize newSize)
+		{
+			HashTable<T> newTable(newSize);
 
-	void swap(HashTable &other)
-	{
-		this->hashTable.swap(other.hashTable);
-		cor::swap(this->ssize, other.ssize);
-	}
-	void print()
-	{
-		// for (auto &node : this->hashTable)
-		//{
-		//	if (node == nullptr)
-		//	{
-		//		std::cout << "null\n";
-		//	}
-		//	else if (node->next == nullptr)
-		//	{
-		//		std::cout << node->data << "-> null\n";
-		//	}
-		//	else {
+			for (auto &e : hashTable)
+			{
+				if (e)
+				{
+					auto head = e.get();
+					while (head)
+					{
+						newTable.insert(head->data);
+						head = head->next.get();
+					}
+				}
+			}
+			this->swap(newTable);
+		}
 
-		//		while (node->next != nullptr)
-		//		{
-		//			std::cout << node->data << " -> ";
-		//			node = node->next;
-		//		}
-		//		std::cout << node->data << "-> null\n";
-		//	}
-		//}
-	}
-};
+		usize size() const
+		{
+			return ssize;
+		}
+
+		hashArr &data()
+		{
+			return hashTable;
+		}
+
+		float loadFactor() const { return (float)this->size() / this->hashTable.size(); }
+
+		void swap(HashTable &other)
+		{
+			this->hashTable.swap(other.hashTable);
+			cor::swap(this->ssize, other.ssize);
+		}
+		void print()
+		{
+			// for (auto &node : this->hashTable)
+			//{
+			//	if (node == nullptr)
+			//	{
+			//		std::cout << "null\n";
+			//	}
+			//	else if (node->next == nullptr)
+			//	{
+			//		std::cout << node->data << "-> null\n";
+			//	}
+			//	else {
+
+			//		while (node->next != nullptr)
+			//		{
+			//			std::cout << node->data << " -> ";
+			//			node = node->next;
+			//		}
+			//		std::cout << node->data << "-> null\n";
+			//	}
+			//}
+		}
+	};
+}
 
 #endif // !HASH_TABLE_HPP

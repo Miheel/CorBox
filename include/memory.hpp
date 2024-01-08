@@ -25,12 +25,12 @@ constexpr auto DEFAULT_ALIGNMENT = 16ull;
 namespace cor::mem
 {
 
-	enum class alignVal_T : size_t
+	enum class alignVal_T : usize
 	{
 	};
 
 	template <typename T>
-	T *allocateArr(size_t size)
+	T *allocateArr(usize size)
 	{
 		return size > 0 ? DBG_NEW T[size]{} : DBG_NEW T[size];
 	}
@@ -42,7 +42,7 @@ namespace cor::mem
 	}
 
 	template <typename T>
-	cor::RemoveExtent_T<T> *allocate_r_extent(size_t size)
+	cor::RemoveExtent_T<T> *allocate_r_extent(usize size)
 	{
 		typedef cor::RemoveExtent_T<T> Elem;
 		Elem *alocatedMem = DBG_NEW Elem[size]();
@@ -84,32 +84,32 @@ namespace cor::mem
 		return ::new (place) T();
 	}
 
-	template <size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
-	void *allocateRaw(size_t count)
+	template <usize Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
+	void *allocateRaw(usize count)
 	{
 		return operator new(count, std::align_val_t{Align});
 	}
 
-	template <size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
-	void *allocateRaw(size_t count)
+	template <usize Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
+	void *allocateRaw(usize count)
 	{
 		return operator new(count);
 	}
 
-	template <size_t Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
+	template <usize Align, EnableIf_T<(Align > DEFAULT_ALIGNMENT), int> = 0>
 	void deallocateRaw(void *ptr)
 	{
 		return operator delete(ptr, std::align_val_t{Align});
 	}
 
-	template <size_t Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
+	template <usize Align, EnableIf_T<(Align <= DEFAULT_ALIGNMENT), int> = 0>
 	void deallocateRaw(void *ptr)
 	{
 		return operator delete(ptr);
 	}
 
 	template <class T>
-	inline constexpr size_t align_of = max_of(alignof(T), static_cast<size_t>(DEFAULT_ALIGNMENT));
+	inline constexpr usize align_of = max_of(alignof(T), static_cast<usize>(DEFAULT_ALIGNMENT));
 
 	template <class T>
 	struct Allocator
@@ -119,7 +119,7 @@ namespace cor::mem
 		using const_pointer = const T *;
 		using reference = T &;
 		using const_reference = const T &;
-		using size_type = size_t;
+		using size_type = usize;
 		using difference_type = std::ptrdiff_t;
 
 		Allocator() = default;
@@ -144,7 +144,7 @@ namespace cor::mem
 
 		void constructN(pointer p, size_type n)
 		{
-			for (size_t i = 0; i < n; i++)
+			for (usize i = 0; i < n; i++)
 			{
 				allocatePlaceDefault<T>(p + i);
 			}

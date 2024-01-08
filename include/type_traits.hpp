@@ -47,7 +47,7 @@ namespace cor
 		typedef T Type;
 	};
 
-	template <class T, size_t N>
+	template <class T, usize N>
 	struct RemoveExtent<T[N]>
 	{
 		typedef T Type;
@@ -124,7 +124,7 @@ namespace cor
 	{
 	};
 
-	template <class T, size_t N>
+	template <class T, usize N>
 	struct IsArray<T[N]> : TrueType
 	{
 	};

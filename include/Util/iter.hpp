@@ -30,20 +30,20 @@ namespace cor
 		return last - first;
 	}
 
-	template <class T, size_t N>
+	template <class T, usize N>
 	constexpr T *begin(T (&array)[N]) noexcept
 	{
 		return (array);
 	}
 
-	template <class T, size_t N>
+	template <class T, usize N>
 	constexpr T *end(T (&array)[N]) noexcept
 	{
 		return (array + N);
 	}
 
-	template <class T, size_t N>
-	constexpr size_t size(T (&array)[N]) noexcept
+	template <class T, usize N>
+	constexpr usize size(T (&array)[N]) noexcept
 	{
 		return N;
 	}
