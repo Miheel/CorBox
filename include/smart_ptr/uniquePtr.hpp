@@ -38,7 +38,7 @@ namespace cor
 				return *this;
 			}
 		}
-		UniquePtr &operator=(nullptr_t) noexcept
+		UniquePtr &operator=(nullType) noexcept
 		{
 			this->reset();
 			return *this;
@@ -140,7 +140,7 @@ namespace cor
 				return *this;
 			}
 		}
-		UniquePtr &operator=(nullptr_t) noexcept
+		UniquePtr &operator=(nullType) noexcept
 		{
 			this->reset();
 			return *this;
@@ -243,13 +243,13 @@ namespace cor
 	}
 
 	template <class T, class D>
-	bool operator==(const UniquePtr<T, D> &ptr, nullptr_t) noexcept
+	bool operator==(const UniquePtr<T, D> &ptr, nullType) noexcept
 	{
 		return !ptr;
 	}
 
 	template <class T, class D>
-	bool operator!=(const UniquePtr<T, D> &ptr, nullptr_t) noexcept
+	bool operator!=(const UniquePtr<T, D> &ptr, nullType) noexcept
 	{
 		return (bool)ptr;
 	}

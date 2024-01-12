@@ -5,7 +5,7 @@
 #include "array.hpp"
 #include "hash.hpp"
 #include "types.hpp"
-
+#include <cmath>
 namespace cor
 {
 

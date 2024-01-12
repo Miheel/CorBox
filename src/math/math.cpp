@@ -1,5 +1,5 @@
 #include "math.hpp"
-
+#include <cmath>
 constexpr int cor::sign(long long num)
 {
 	return num < 0 ? -1 : 1;

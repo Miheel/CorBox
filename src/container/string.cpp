@@ -124,11 +124,6 @@ cor::String::const_pointer cor::String::end() const noexcept
 	return this->data() + this->size();
 }
 
-constexpr cor::usize cor::String::size() const noexcept
-{
-	return this->ssize;
-}
-
 cor::String::const_pointer cor::String::data() const noexcept
 {
 	return this->ptr;
@@ -147,12 +142,6 @@ cor::Slice<char> cor::String::slice(usize first, usize last)
 cor::Slice<char> cor::String::slice()
 {
 	return Slice<char>(this->begin(), this->end());
-}
-
-constexpr void cor::String::swap(String &other) noexcept
-{
-	cor::swap(this->ssize, other.ssize);
-	cor::swap(this->ptr, other.ptr);
 }
 
 cor::String::~String()

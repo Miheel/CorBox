@@ -1,17 +1,23 @@
 BIN = bin
 BUILD = build
-SRC_DIR = src
-INCL_DIR = include
+SRC = src
+SRC_DIR = $(shell find src -type d)
+INCL_DIR = $(shell find include -type d)
 ##add additional includes if needed ex. -I./path/to/include/
-INCL = -I$(INCL_DIR)/
-EXE = lab_.exe
+INCL =  $(addprefix -I ,$(addsuffix / ,$(INCL_DIR)))
 
-PROJECT_STRUCTURE = $(BIN)/. $(BUILD)/. $(SRC_DIR)/. $(INCL_DIR)/.
+EXE = CorBox.exe
 
-SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
+PROJECT_STRUCTURE = $(BIN)/. $(BUILD)/. $(SRC)/. include/.
+
+##SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
+SRC_FILES = $(strip $(foreach dir,$(SRC_DIR), $(wildcard $(dir)/*.cpp)))
+##SRC_FILES = $(shell find $(SRC_DIR) -name "*.cpp")
 ##HEADER_FILES = $(wildcard $(INCL_DIR)/*.hpp)
-HEADER_FILES = $(shell find $(INCL_DIR) -name "*.hpp")
-OBJ_FILES = $(patsubst $(SRC_DIR)/%.cpp,$(BIN)/%.o,$(SRC_FILES))
+##HEADER_FILES = $(shell find $(INCL_DIR) -name "*.hpp")
+HEADER_FILES = $(strip $(foreach dir,$(INCL_DIR), $(wildcard $(dir)/*.hpp)))
+
+OBJ_FILES = $(patsubst src/%.cpp,$(BIN)/%.o,$(SRC_FILES))
 ##add additional libraries if needed folder to find libs in -L./path/to/lib/
 libpath =
 ##Specify libs to use ex. -lsfml-graphics
@@ -26,9 +32,7 @@ LDFLAGS = $(libpath)
 #Compiler flags
 CXXFLAGS = $(LANG_STD)
 ##Preprocessor flags
-CPPFLAGS = $(ERR_FLAGS)
-
-CPPFLAGS += $(INCL)
+CPPFLAGS = $(ERR_FLAGS) $(INCL) -MMD -MP
 
 COMPILE = $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c
 LINK = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)
@@ -39,19 +43,24 @@ all: $(BUILD)/$(EXE)
 ##and main file
 ##----------------------------------------------------------
 .PHONY: project
-project: $(PROJECT_STRUCTURE) $(SRC_DIR)/main.cpp
+project: $(PROJECT_STRUCTURE) $(SRC)/main.cpp
 $(PROJECT_STRUCTURE):
 	mkdir -p $@
-$(SRC_DIR)/main.cpp: 
-	[ -f $(SRC_DIR)/main.cpp ] || echo -e '#include <iostream>\n\nint main()\n{\n\nreturn 0;\n}' > $(SRC_DIR)/main.cpp
+$(SRC)/main.cpp: 
+	[ -f $(SRC)/main.cpp ] || echo -e '#include <iostream>\n\nint main()\n{\n\nreturn 0;\n}' > $(SRC)/main.cpp
 
 .SECONDEXPANSION:
 
 ##Rule for compiling and generatign objectfiles (.o) files.
 ##----------------------------------------------------------
 objs:$(OBJ_FILES)
-$(BIN)/%.o: $(SRC_DIR)/%.cpp | $$(@D)/.
+$(BIN)/%.o: $(SRC)/%.cpp | $$(@D)/.
 	$(COMPILE) $< -o $@
+
+##Rule for creating folder structure in bin folder to mirror that of the src folder.
+##----------------------------------------------------------
+$(BIN)/%/.:
+	mkdir -p $@
 
 ##Rule for generating the executable.
 ##----------------------------------------------------------
@@ -68,12 +77,13 @@ run: exe
 ##----------------------------------------------------------
 .PHONY: clean
 clean:
-	rm -rf $(OBJ_FILES) $(BUILD)/$(EXE)
+	rm -rf $(BIN)/* $(BUILD)/$(EXE)
 
 help:
 	@echo "===================Commands==================="
 	@echo "make [TARGET]"
 	@echo "Targets:"
+	@echo "run		Run the program"
 	@echo "all		Compiling and linking"
 	@echo "objs		Generate objectfiles no linking"
 	@echo "exe		Linking to generate executable file"
@@ -88,7 +98,8 @@ show:
 	@echo "Source files:		"$(SRC_FILES)
 	@echo "object files:		"$(OBJ_FILES)
 	@echo "Header files:		"$(HEADER_FILES)
-	@echo "INCL_DIR:			"$(INCL)
+	@echo "INCL_DIR:		"$(INCL)
+	@echo "SRC_DIR:		"$(SRC_DIR)
 	@echo "Compiler:		"$(CXX)
 	@echo "Language standard:	"$(LANG_STD)
 	@echo "Error flags:		"$(ERR_FLAGS)

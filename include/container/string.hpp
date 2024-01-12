@@ -52,14 +52,19 @@ namespace cor
 		const_pointer end() const noexcept;
 
 		// CAP
-		constexpr usize size() const noexcept;
+		constexpr usize size() const noexcept {
+			return this->ssize;
+		}
 		constexpr bool empty() const noexcept
 		{
 			return size() == 0;
 		}
 
 		// MODIFIERS
-		constexpr void swap(String &other) noexcept;
+		constexpr void swap(String &other) noexcept {
+			cor::swap(this->ssize, other.ssize);
+			cor::swap(this->ptr, other.ptr);
+		}
 
 		~String();
 

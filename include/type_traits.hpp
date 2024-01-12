@@ -13,13 +13,13 @@ namespace cor
 	};
 
 	template <typename T>
-	struct RemoveReference<T &>
+	struct RemoveReference<T&>
 	{
 		typedef T Type;
 	};
 
 	template <typename T>
-	struct RemoveReference<T &&>
+	struct RemoveReference<T&&>
 	{
 		typedef T Type;
 	};
@@ -30,8 +30,9 @@ namespace cor
 	template <typename T, typename D>
 	struct addPointer
 	{
-		typedef T *Type;
+		typedef T* Type;
 	};
+
 	template <typename T, typename D>
 	using addPointer_T = typename addPointer<T, D>::Type;
 
@@ -131,6 +132,26 @@ namespace cor
 
 	template <class T>
 	inline constexpr bool IsArray_T = IsArray<T>::value;
+
+	template<class T>
+	struct IsPointer :FalseType
+	{};
+
+	template<class T>
+	struct IsPointer<T*> :TrueType
+	{};
+
+	template<class T>
+	struct IsPointer<const T*> :TrueType
+	{};
+
+	template<class T>
+	struct IsPointer<T* const> :TrueType
+	{};
+
+	template<class T>
+	inline constexpr bool IsPtr_V = IsPointer<T>::value;
+
 
 } // !namespace cor
 
