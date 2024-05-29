@@ -124,6 +124,17 @@ cor::String::const_pointer cor::String::end() const noexcept
 	return this->data() + this->size();
 }
 
+// CAP
+
+inline constexpr cor::usize cor::String::size() const noexcept {
+	return this->ssize;
+}
+
+inline constexpr bool cor::String::empty() const noexcept
+{
+	return size() == 0;
+}
+
 cor::String::const_pointer cor::String::data() const noexcept
 {
 	return this->ptr;

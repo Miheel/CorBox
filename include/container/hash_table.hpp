@@ -1,11 +1,12 @@
 #ifndef HASH_TABLE_HPP
 #define HASH_TABLE_HPP
 
-#include "uniquePtr.hpp"
+#include <cmath>
 #include "array.hpp"
 #include "hash.hpp"
+#include "uniquePtr.hpp"
 #include "types.hpp"
-#include <cmath>
+
 namespace cor
 {
 

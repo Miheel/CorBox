@@ -4,6 +4,7 @@
 #include <new>
 
 #include "utility.hpp"
+#include "algorithms.hpp"
 #include "type_traits.hpp"
 #include "types.hpp"
 

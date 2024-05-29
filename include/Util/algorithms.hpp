@@ -1,10 +1,25 @@
 #ifndef ALGORITHMS_HPP
 #define ALGORITHMS_HPP
 
+#include <initializer_list>
+#include <algorithm>
 #include "range.hpp"
 
 namespace cor
 {
+
+	template <class T>
+	constexpr const T& max_of(const T& a, const T& b)
+	{
+		return a < b ? b : a;
+	}
+
+	template <class T>
+	constexpr const T& max_of(std::initializer_list<T> ilist)
+	{
+		//fix max element
+		return *std::max_element(ilist.begin(), ilist.end());
+	}
 
 	template <typename InIt, typename OutIt, typename Func>
 	inline OutIt transform(const InIt first, const InIt last, OutIt dest, Func func)
