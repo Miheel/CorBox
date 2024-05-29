@@ -1,6 +1,7 @@
 #ifndef TYPE_TRAITS_HPP
 #define TYPE_TRAITS_HPP
 
+#include "algorithms.hpp"
 #include "types.hpp"
 
 namespace cor
@@ -152,6 +153,66 @@ namespace cor
 	template<class T>
 	inline constexpr bool IsPtr_V = IsPointer<T>::value;
 
+	template<class T, class ...Types>
+	struct is_present
+	{
+		inline static constexpr bool value = (std::is_same_v<T, Types> || ...);
+	};
+
+	template<class T, class ...Types>
+	inline constexpr bool is_present_v = is_present<T, Types...>::value;
+
+
+	template<class T, class...Rest>
+	struct index_of
+	{};
+
+	template<class T, class...Rest>
+	struct index_of<T, T, Rest...>
+	{
+		static constexpr size_t value = 0;
+	};
+
+	template<class T, class U, class...Rest>
+	struct index_of<T, U, Rest...>
+	{
+		static constexpr size_t value = std::is_same_v<T, U> ? 0 : 1 + index_of<T, Rest...>::value;
+	};
+
+	template<class T, class ...Rest>
+	static constexpr size_t index_of_v = index_of<T, Rest...>::value;
+
+	template <size_t Index, typename... Types>
+	struct TypeAt;
+
+	template<size_t Idx, class First, class...Rest>
+	struct TypeAt<Idx, First, Rest...>
+	{
+		using type = typename TypeAt<Idx - 1, Rest...>::type;
+	};
+
+	template<class First, class...Rest>
+	struct TypeAt<0, First, Rest...>
+	{
+		using type = First;
+	};
+
+	template <size_t Index, typename... Types>
+	using TypeAt_t = typename TypeAt<Index, Types...>::type;
+
+	template<size_t Len, class ...Types>
+	struct alignedUnion
+	{
+		static constexpr size_t aligned_value = max_of({ alignof(Types)... });
+		static constexpr size_t size_value = max_of({ Len, sizeof(Types)... });
+		struct Type
+		{
+			alignas(aligned_value) char ch[size_value];
+		};
+	};
+
+	template<size_t Len, class ...Types>
+	using alignedUnion_t = typename alignedUnion<Len, Types...>::Type;
 
 } // !namespace cor
 
