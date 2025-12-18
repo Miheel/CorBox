@@ -1,26 +1,40 @@
 #include "string.hpp"
+#include "iter.hpp"
+#include "utility.hpp"
+#include <algorithms.hpp>
+#include <initializer_list>
+#include <range.hpp>
+#include <types.hpp>
 
-cor::String::String(usize count, char chr) : ssize(count)
+// CTOR
+cor::String::String(usize count, char chr)
+	: ssize(count)
 {
-	this->ptr = allocator.createN(this->ssize + 1);
+	this->aloc(count);
 	usize i = 0;
 	for (; i < count; i++)
 	{
 		this->ptr[i] = chr;
 	}
-	this->ptr[i] = '\0';
+	this->ptr[this->ssize] = '\0';
 }
 
-cor::String::String(const_pointer s)
+cor::String::String(const char *s)
 	: String(s, cor::strlen(s))
 {
 }
 
-cor::String::String(const_pointer s, usize count)
+cor::String::String(const char *s, usize count)
+	: ssize(count)
 {
-	this->ssize = count;
-	this->ptr = allocator.createN(this->ssize + 1);
-	mem::memCopy(s, s + this->ssize, this->ptr);
+	this->aloc(count);
+	// mem::memCopy(s, s + this->ssize, this->ptr);
+	usize i = 0;
+	for (; i < count; i++)
+	{
+		this->ptr[i] = s[i];
+	}
+	this->ptr[this->ssize] = '\0';
 }
 
 cor::String::String(const String &other)
@@ -38,6 +52,13 @@ cor::String::String(std::initializer_list<char> ilist)
 {
 }
 
+// DESTRUCTOR
+cor::String::~String()
+{
+	allocator.deallocate(this->ptr);
+}
+
+// ASSIGN
 cor::String &cor::String::operator=(const String &str)
 {
 	if (*this != str)
@@ -57,7 +78,7 @@ cor::String &cor::String::operator=(String &&str) noexcept
 	return *this;
 }
 
-cor::String &cor::String::operator=(const_pointer s)
+cor::String &cor::String::operator=(const char *s)
 {
 	if (*this != s)
 	{
@@ -74,77 +95,121 @@ cor::String &cor::String::operator=(std::initializer_list<char> ilist)
 	return *this;
 }
 
-cor::String::reference cor::String::operator[](usize index)
+// ELEM ACCESS
+char &cor::String::operator[](usize index)
 {
 	return this->data()[index];
 }
 
-cor::String::const_reference cor::String::operator[](usize index) const
+const char &cor::String::operator[](usize index) const
 {
 	return this->data()[index];
 }
 
-cor::String::reference cor::String::front()
+char &cor::String::at(usize index)
+{
+	return this->data()[index];
+}
+
+const char &cor::String::at(usize index) const
+{
+	return this->data()[index];
+}
+
+char &cor::String::front()
 {
 	return this->data()[0];
 }
 
-cor::String::const_reference cor::String::front() const
+const char &cor::String::front() const
 {
 	return this->data()[0];
 }
 
-cor::String::reference cor::String::back()
+char &cor::String::back()
 {
 	return this->data()[this->size() - 1];
 }
 
-cor::String::const_reference cor::String::back() const
+const char &cor::String::back() const
 {
 	return this->data()[this->size() - 1];
 }
 
-cor::String::pointer cor::String::begin() noexcept
+// ITER
+char *cor::String::begin() noexcept
 {
 	return this->data();
 }
 
-cor::String::const_pointer cor::String::begin() const noexcept
+const char *cor::String::begin() const noexcept
 {
 	return this->data();
 }
 
-cor::String::pointer cor::String::end() noexcept
+char *cor::String::end() noexcept
 {
 	return this->data() + this->size();
 }
 
-cor::String::const_pointer cor::String::end() const noexcept
+const char *cor::String::end() const noexcept
 {
 	return this->data() + this->size();
 }
 
 // CAP
-
-inline constexpr cor::usize cor::String::size() const noexcept {
-	return this->ssize;
-}
-
-inline constexpr bool cor::String::empty() const noexcept
+cor::usize cor::String::max_size() const noexcept
 {
-	return size() == 0;
+	return cor::distance(this->begin(), this->end());
 }
 
-cor::String::const_pointer cor::String::data() const noexcept
+// MODIFIERS
+void cor::String::pushBack(char chr)
 {
-	return this->ptr;
+	if (this->size() == this->capacity())
+	{
+		resize(this->cap + 1);
+	}
+
+	this->ptr[this->ssize++] = chr;
+	this->ptr[this->ssize] = '\0';
 }
 
-cor::String::pointer cor::String::data() noexcept
+cor::String &cor::String::insert(usize index, usize count, char chr)
 {
-	return this->ptr;
+	String temp = "";
+	if (index <= this->size())
+	{
+		// for (size_t i = 0; i < length; i++)
+		//{
+
+		//}
+	}
+	return *this;
 }
 
+void cor::String::resize(usize newSize)
+{
+	usize newCap = newSize <= 15 ? 15 : (((newSize) + 14) / 15) * 15;
+	auto temp = allocator.createN(newCap + 1);
+	for (size_t i = 0; i < this->ssize; i++)
+	{
+		temp[i] = this->ptr[i];
+	}
+	temp[this->ssize] = '\0';
+	allocator.deallocate(this->ptr);
+	this->ptr = temp;
+	this->cap = newCap;
+}
+
+void cor::String::swap(String &other) noexcept
+{
+	cor::swap(this->ssize, other.ssize);
+	cor::swap(this->cap, other.cap);
+	cor::swap(this->ptr, other.ptr);
+}
+
+// SLICE
 cor::Slice<char> cor::String::slice(usize first, usize last)
 {
 	return Slice<char>(this->begin() + first, this->begin() + last);
@@ -155,9 +220,11 @@ cor::Slice<char> cor::String::slice()
 	return Slice<char>(this->begin(), this->end());
 }
 
-cor::String::~String()
+void cor::String::aloc(usize count)
 {
-	allocator.deallocate(this->ptr);
+	this->cap = count <= 15 ? 15 : ((count + 14) / 15) * 15;
+	this->ptr = allocator.createN(this->cap + 1);
+	this->ptr[0] = '\0';
 }
 
 bool cor::operator==(const cor::String &lhs, const cor::String &rhs) noexcept

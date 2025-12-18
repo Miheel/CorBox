@@ -1,9 +1,13 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
-#include <iostream>
 #include "buffer.hpp"
 #include "range.hpp"
+#include "utility.hpp"
+#include <initializer_list>
+#include <iostream>
+#include <types.hpp>
+
 namespace cor
 {
 
@@ -11,18 +15,13 @@ namespace cor
 	class Array
 	{
 	public:
-		using reference = T &;
-		using const_reference = const T &;
-		using iterator = T *;
-		using const_iterator = const T *;
-
 		// constructors
 		constexpr Array() : buffer(0) {}
-		constexpr Array(size_ty size)
+		constexpr Array(cor::usize size)
 			: buffer(size), currentSize(size)
 		{
 		}
-		constexpr Array(const T *source, size_ty size)
+		constexpr Array(const T *source, cor::usize size)
 			: buffer(source, size), currentSize(size)
 		{
 		}
@@ -61,20 +60,20 @@ namespace cor
 		}
 
 		// Access
-		constexpr reference operator[](size_ty index) { return buffer[index]; }
-		constexpr const_reference operator[](size_ty index) const { return buffer[index]; }
+		constexpr T &operator[](cor::usize index) { return buffer[index]; }
+		constexpr const T &operator[](cor::usize index) const { return buffer[index]; }
 
-		constexpr reference at(size_ty index) { return buffer[index]; }
-		constexpr const_reference at(size_ty index) const { return buffer[index]; }
+		constexpr T &at(cor::usize index) { return buffer[index]; }
+		constexpr const T &at(cor::usize index) const { return buffer[index]; }
 
-		constexpr iterator data() { return buffer.data(); }
-		constexpr const_iterator data() const { return buffer.data(); }
+		constexpr T *data() { return buffer.data(); }
+		constexpr const T *data() const { return buffer.data(); }
 
 		// Capacity
-		constexpr size_ty size() const { return currentSize; }
+		constexpr cor::usize size() const { return currentSize; }
 		constexpr bool empty() { return currentSize == 0 ? true : false; }
-		constexpr size_ty capacity() { return buffer.size(); }
-		constexpr void reserve(size_ty newSize)
+		constexpr cor::usize capacity() { return buffer.size(); }
+		constexpr void reserve(cor::usize newSize)
 		{
 			if (newSize > this->capacity())
 			{
@@ -112,7 +111,7 @@ namespace cor
 			buffer[currentSize++] = cor::isMovable(value);
 		}
 		constexpr void popBack() { --currentSize; }
-		constexpr void resize(size_ty newSize)
+		constexpr void resize(cor::usize newSize)
 		{
 			Array newArr(newSize);
 
@@ -127,11 +126,11 @@ namespace cor
 		}
 
 		// Iterators
-		constexpr const_iterator begin() const { return buffer.begin(); }
-		constexpr const_iterator end() const { return buffer.begin() + currentSize; }
+		constexpr const T *begin() const { return buffer.begin(); }
+		constexpr const T *end() const { return buffer.begin() + currentSize; }
 
-		constexpr iterator begin() { return buffer.begin(); }
-		constexpr iterator end() { return buffer.begin() + currentSize; }
+		constexpr T *begin() { return buffer.begin(); }
+		constexpr T *end() { return buffer.begin() + currentSize; }
 
 		constexpr Slice<T> slice()
 		{
@@ -156,7 +155,7 @@ namespace cor
 	private:
 		constexpr void expand()
 		{
-			size_ty newSize = static_cast<size_ty>(this->capacity() * 1.5);
+			cor::usize newSize = static_cast<cor::usize>(this->capacity() * 1.5);
 			if (this->capacity() == 0)
 			{
 				newSize = 1;
@@ -168,10 +167,10 @@ namespace cor
 
 			realoc(newSize);
 		}
-		constexpr void realoc(size_ty newSize)
+		constexpr void realoc(cor::usize newSize)
 		{
 			Buffer<T> newBuffer(newSize);
-			for (usize i = 0; i < newSize; i++)
+			for (usize i = 0; i < currentSize; i++)
 			{
 				newBuffer[i] = buffer[i];
 			}
@@ -179,7 +178,7 @@ namespace cor
 		}
 
 		Buffer<T> buffer;
-		size_ty currentSize = 0;
+		cor::usize currentSize = 0;
 	};
 
 	template <class T>

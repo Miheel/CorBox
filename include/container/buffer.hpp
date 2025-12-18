@@ -2,12 +2,12 @@
 #define BUFFER_HPP
 
 #include <initializer_list>
+#include "utility.hpp"
+#include "types.hpp"
 #include "memory.hpp"
 
 namespace cor
 {
-
-	typedef unsigned long long size_ty;
 
 	template <typename T>
 	class Buffer
@@ -16,25 +16,25 @@ namespace cor
 		// constructors
 		constexpr Buffer() : begin_ptr(nullptr), end_ptr(nullptr) {}
 
-		constexpr Buffer(size_ty size)
+		constexpr Buffer(cor::usize size)
 			: begin_ptr(mem::template allocateArr<T>(size)), end_ptr(begin_ptr + size)
 		{
 		}
 
-		constexpr Buffer(const T* source, size_ty size)
+		constexpr Buffer(const T *source, cor::usize size)
 			: Buffer(size)
 		{
-			for (size_ty i = 0; i < size; i++)
+			for (cor::usize i = 0; i < size; i++)
 			{
 				this->begin_ptr[i] = cor::isMovable(source[i]);
 			}
 		}
-		constexpr Buffer(const Buffer& other) // copy constructor
+		constexpr Buffer(const Buffer &other) // copy constructor
 			: Buffer(other.begin(), other.size())
 		{
 		}
 
-		constexpr Buffer(Buffer&& rhs)
+		constexpr Buffer(Buffer &&rhs)
 		{ // move constructor
 			this->swap(rhs);
 		}
@@ -43,36 +43,36 @@ namespace cor
 			: Buffer(init.begin(), init.size()) {}
 
 		// Assign
-		constexpr Buffer& operator=(const Buffer& rhs)
+		constexpr Buffer &operator=(const Buffer &rhs)
 		{ // copy assign
 			auto temp(rhs);
 			this->swap(temp);
 			return *this;
 		}
 
-		constexpr Buffer& operator=(Buffer&& rhs)
+		constexpr Buffer &operator=(Buffer &&rhs)
 		{ // move assign
 			this->swap(rhs);
 			return *this;
 		}
 
 		// Access
-		constexpr T& operator[](size_ty index) { return this->begin_ptr[index]; }
-		constexpr const T& operator[](size_ty index) const { return this->begin_ptr[index]; }
+		constexpr T &operator[](cor::usize index) { return this->begin_ptr[index]; }
+		constexpr const T &operator[](cor::usize index) const { return this->begin_ptr[index]; }
 
-		constexpr size_ty size() const { return this->end_ptr - this->begin_ptr; }
+		constexpr cor::usize size() const { return this->end_ptr - this->begin_ptr; }
 		constexpr bool empty() { return this->end_ptr == this->begin_ptr; }
 
-		constexpr T* begin() { return this->begin_ptr; }
-		constexpr T* end() { return this->end_ptr; }
+		constexpr T *begin() { return this->begin_ptr; }
+		constexpr T *end() { return this->end_ptr; }
 
-		constexpr const T* begin() const { return this->begin_ptr; }
-		constexpr const T* end() const { return this->end_ptr; }
+		constexpr const T *begin() const { return this->begin_ptr; }
+		constexpr const T *end() const { return this->end_ptr; }
 
-		constexpr T* data() { return this->begin_ptr; }
-		constexpr const T* data() const { return this->begin_ptr; }
+		constexpr T *data() { return this->begin_ptr; }
+		constexpr const T *data() const { return this->begin_ptr; }
 
-		constexpr void swap(Buffer& other)
+		constexpr void swap(Buffer &other)
 		{
 			cor::swap(this->begin_ptr, other.begin_ptr);
 			cor::swap(this->end_ptr, other.end_ptr);
@@ -91,9 +91,8 @@ namespace cor
 			end_ptr = nullptr;
 		}
 
-		T* begin_ptr = nullptr;
-		T* end_ptr = nullptr;
-
+		T *begin_ptr = nullptr;
+		T *end_ptr = nullptr;
 	};
 
 } // !namespace cor

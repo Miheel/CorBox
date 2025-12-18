@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include "utility.hpp"
+#include "types.hpp"
+
 namespace cor
 {
 
@@ -20,10 +22,6 @@ namespace cor
 			node_t *next = nullptr;
 			node_t *prev = nullptr;
 		};
-		using pointer = node_t *;
-		using const_pointer = const node_t *;
-		using reference = T &;
-		using const_reference = const T &;
 
 	public:
 		Linked_list()
@@ -48,19 +46,19 @@ namespace cor
 		Linked_list<T> &operator+=(const Linked_list &rhs);
 
 		// inserting elements
-		void insert(T value, usize pos);
+		void insert(T value, cor::usize pos);
 		void push_front(T value);
 		void push_back(T value);
-		void add_node(pointer node);
+		void add_node(node_t *node);
 
 		// Iterators
-		pointer begin() { return this->head; }
-		pointer end() { return this->tail; }
-		const_pointer begin() const { return this->head; }
-		const_pointer end() const { return this->tail; }
-		pointer operator[](usize pos) const
+		node_t *begin() { return this->head; }
+		node_t *end() { return this->tail; }
+		const node_t *begin() const { return this->head; }
+		const node_t *end() const { return this->tail; }
+		node_t *operator[](cor::usize pos) const
 		{
-			pointer foundValue = 0;
+			node_t *foundValue = 0;
 			node_t *walker = head;
 
 			if (pos == 0)
@@ -69,7 +67,7 @@ namespace cor
 			}
 			else
 			{
-				for (usize i = 0; i <= pos; i++, walker = walker->next)
+				for (cor::usize i = 0; i <= pos; i++, walker = walker->next)
 				{
 					foundValue = walker;
 				}
@@ -79,19 +77,19 @@ namespace cor
 		}
 
 		// accessing elements
-		const_reference front() const { return this->head->value; }
-		const_reference back() const { return this->tail->value; }
-		reference front() { return this->head->value; }
-		reference back() { return this->tail->value; }
-		T at(usize pos) const;
+		const T &front() const { return this->head->value; }
+		const T &back() const { return this->tail->value; }
+		T &front() { return this->head->value; }
+		T &back() { return this->tail->value; }
+		T at(cor::usize pos) const;
 
 		// removing elements
-		void remove(usize pos);
+		void remove(cor::usize pos);
 		void pop_front();
 		void pop_back();
 
 		// informational
-		usize size() const { return this->nrOfNodes; }
+		cor::usize size() const { return this->nrOfNodes; }
 		bool is_empty() const { return this->nrOfNodes == 0 ? true : false; }
 		bool is_order() const;
 
@@ -107,7 +105,7 @@ namespace cor
 	private:
 		node_t *head;
 		node_t *tail;
-		usize nrOfNodes;
+		cor::usize nrOfNodes;
 
 		void copy(Linked_list const &other)
 		{
@@ -176,7 +174,7 @@ namespace cor
 	}
 
 	template <typename T>
-	inline void Linked_list<T>::insert(T value, usize pos)
+	inline void Linked_list<T>::insert(T value, cor::usize pos)
 	{
 		node_t *walker = head;
 		walker = this->head;
@@ -191,7 +189,7 @@ namespace cor
 		}
 		else
 		{
-			for (usize i = 0; i <= pos && walker != nullptr; i++)
+			for (cor::usize i = 0; i <= pos && walker != nullptr; i++)
 			{
 				if (i == pos)
 				{
@@ -244,7 +242,7 @@ namespace cor
 	}
 
 	template <typename T>
-	inline void Linked_list<T>::add_node(pointer node)
+	inline void Linked_list<T>::add_node(node_t *node)
 	{
 		if (this->head == nullptr)
 		{
@@ -258,7 +256,7 @@ namespace cor
 	}
 
 	template <typename T>
-	inline T Linked_list<T>::at(usize pos) const
+	inline T Linked_list<T>::at(cor::usize pos) const
 	{
 		T foundValue = 0;
 		node_t *walker = head;
@@ -269,7 +267,7 @@ namespace cor
 		}
 		else
 		{
-			for (usize i = 0; i <= pos; i++, walker = walker->next)
+			for (cor::usize i = 0; i <= pos; i++, walker = walker->next)
 			{
 				foundValue = walker->value;
 			}
@@ -279,7 +277,7 @@ namespace cor
 	}
 
 	template <typename T>
-	inline void Linked_list<T>::remove(usize pos)
+	inline void Linked_list<T>::remove(cor::usize pos)
 	{
 		node_t *walker = head;
 		walker = this->head;
@@ -294,7 +292,7 @@ namespace cor
 		}
 		else
 		{
-			for (usize i = 0; i <= pos && walker != nullptr; i++)
+			for (cor::usize i = 0; i <= pos && walker != nullptr; i++)
 			{
 				if (i == pos)
 				{
@@ -496,7 +494,7 @@ namespace cor
 		{
 			auto walker_l = lhs.begin(), walker_r = rhs.begin();
 
-			for (usize i = 0; i < lhs.size(); i++)
+			for (cor::usize i = 0; i < lhs.size(); i++)
 			{
 				if (walker_l->value == walker_r->value)
 				{

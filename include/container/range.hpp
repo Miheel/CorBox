@@ -10,7 +10,7 @@ namespace cor
 	class Slice
 	{
 	public:
-		constexpr Slice(const T *s, usize count)
+		constexpr Slice(const T *s, cor::usize count)
 			: first(s), ssize(count)
 		{
 		}
@@ -20,11 +20,11 @@ namespace cor
 		{
 		}
 
-		usize size() const { return ssize; }
+		cor::usize size() const { return ssize; }
 		bool empty() const { return first == nullptr; }
 
-		T &operator[](usize index) const { return first[index]; }
-		T &at(usize index) const { return first[index]; }
+		T &operator[](cor::usize index) const { return first[index]; }
+		T &at(cor::usize index) const { return first[index]; }
 
 		const T &front() const { return *first; }
 		const T &back() const { return *(first + ssize - 1); }
@@ -42,14 +42,14 @@ namespace cor
 
 	private:
 		T *first = nullptr;
-		usize ssize;
+		cor::usize ssize;
 	};
 
 	template <class T>
 	class View
 	{
 	public:
-		constexpr View(const T *s, usize count)
+		constexpr View(const T *s, cor::usize count)
 			: first(s), last(s + count)
 		{
 		}
@@ -59,11 +59,11 @@ namespace cor
 		{
 		}
 
-		usize size() const { return last - first; }
+		cor::usize size() const { return last - first; }
 		bool empty() const { return first == nullptr; }
 
-		const T &operator[](usize index) const { return first[index]; }
-		const T &at(usize index) const { return first[index]; }
+		const T &operator[](cor::usize index) const { return first[index]; }
+		const T &at(cor::usize index) const { return first[index]; }
 
 		const T &front() const { return *first; }
 		const T &back() const { return *(last - 1); }
