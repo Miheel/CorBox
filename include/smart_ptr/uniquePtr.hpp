@@ -1,11 +1,12 @@
 #ifndef UNIQUEPTR_HPP
 #define UNIQUEPTR_HPP
 
-#include <type_traits>
 #include "utility.hpp"
-#include "memory.hpp"
+#include <type_traits>
 #include "type_traits.hpp"
 #include "types.hpp"
+#include "memory.hpp"
+#include "allocator.hpp"
 
 namespace cor
 {
@@ -15,46 +16,44 @@ namespace cor
 	class UniquePtr
 	{
 	public:
-		using deleterNoRef = typename cor::RemoveReference_T<Deleter>;
-		using Pointer = typename cor::addPointer_T<T, deleterNoRef>;
-		using Elem_t = T;
+		using Pointer = T *;
 
 		// Constructors
 		UniquePtr() : pointer(nullptr) {}
-		UniquePtr(Pointer p) : pointer(p) {}
+		UniquePtr(T *p) : pointer(p) {}
 
-		UniquePtr(UniquePtr&& other) noexcept
+		UniquePtr(UniquePtr &&other) noexcept
 		{
 			this->reset(other.release());
 			deleter = cor::forward<Deleter>(other.getDeleter());
 		}
 
 		// assigns
-		UniquePtr& operator=(UniquePtr&& other) noexcept
+		UniquePtr &operator=(UniquePtr &&other) noexcept
 		{
 			this->reset(other.release());
 			deleter = cor::forward<Deleter>(other.getDeleter());
 			return *this;
 		}
-		UniquePtr& operator=(nullType) noexcept
+		UniquePtr &operator=(nullType) noexcept
 		{
 			this->reset();
 			return *this;
 		}
 
 		// deleted functionality
-		UniquePtr(const UniquePtr& other) = delete;
-		UniquePtr& operator=(const UniquePtr& other) = delete;
+		UniquePtr(const UniquePtr &other) = delete;
+		UniquePtr &operator=(const UniquePtr &other) = delete;
 
 		// Modifiers
-		Pointer release() noexcept
+		T *release() noexcept
 		{
 			auto oldPtr = this->pointer;
 			this->pointer = nullptr;
 
 			return oldPtr;
 		}
-		void reset(Pointer ptr = Pointer()) noexcept
+		void reset(T *ptr = Pointer()) noexcept
 		{
 			auto oldPtr = this->pointer;
 			this->pointer = ptr;
@@ -64,18 +63,18 @@ namespace cor
 				this->getDeleter()(oldPtr);
 			}
 		}
-		void swap(UniquePtr& other) noexcept
+		void swap(UniquePtr &other) noexcept
 		{
 			cor::swap(this->pointer, other.pointer);
 			cor::swap(this->deleter, other.deleter);
 		}
 
 		// Observers
-		Pointer get() const noexcept
+		T *get() const noexcept
 		{
 			return pointer;
 		}
-		Deleter& getDeleter()
+		Deleter &getDeleter()
 		{
 			return deleter;
 		}
@@ -85,11 +84,11 @@ namespace cor
 		}
 
 		// dereferences pointer to the managed object
-		Pointer operator->() const noexcept
+		T *operator->() const noexcept
 		{
 			return get();
 		}
-		Elem_t operator*() const noexcept
+		T operator*() const noexcept
 		{
 			return *get();
 		}
@@ -104,7 +103,7 @@ namespace cor
 		}
 
 	private:
-		Pointer pointer = nullptr;
+		T *pointer = nullptr;
 		Deleter deleter;
 	};
 
@@ -113,9 +112,7 @@ namespace cor
 	class UniquePtr<T[], Deleter>
 	{
 	public:
-		using deleterNoRef = typename cor::RemoveReference_T<Deleter>;
-		using Pointer = typename cor::addPointer_T<T, deleterNoRef>;
-		using Elem_t = T;
+		using Pointer = T *;
 
 		// Constructors
 		UniquePtr() : pointer(nullptr) {}
@@ -123,14 +120,14 @@ namespace cor
 		template <class U>
 		explicit UniquePtr(U p) noexcept : pointer(p) {}
 
-		UniquePtr(UniquePtr&& other) noexcept
+		UniquePtr(UniquePtr &&other) noexcept
 		{
 			this->reset(other.release());
 			deleter = cor::forward<Deleter>(other.getDeleter());
 		}
 
 		// assigns
-		UniquePtr& operator=(UniquePtr&& other) noexcept
+		UniquePtr &operator=(UniquePtr &&other) noexcept
 		{
 			{
 				this->reset(other.release());
@@ -138,18 +135,18 @@ namespace cor
 				return *this;
 			}
 		}
-		UniquePtr& operator=(nullType) noexcept
+		UniquePtr &operator=(nullType) noexcept
 		{
 			this->reset();
 			return *this;
 		}
 
 		// deleted functionality
-		UniquePtr(const UniquePtr& other) = delete;
-		UniquePtr& operator=(const UniquePtr& other) = delete;
+		UniquePtr(const UniquePtr &other) = delete;
+		UniquePtr &operator=(const UniquePtr &other) = delete;
 
 		// Modifiers
-		Pointer release() noexcept
+		T *release() noexcept
 		{
 			auto oldPtr = this->pointer;
 			this->pointer = nullptr;
@@ -171,18 +168,18 @@ namespace cor
 		{
 			reset(Pointer());
 		}
-		void swap(UniquePtr& other) noexcept
+		void swap(UniquePtr &other) noexcept
 		{
 			cor::swap(this->pointer, other.pointer);
 			cor::swap(this->deleter, other.deleter);
 		}
 
 		// Observers
-		Pointer get() const noexcept
+		T *get() const noexcept
 		{
 			return pointer;
 		}
-		Deleter& getDeleter()
+		Deleter &getDeleter()
 		{
 			return deleter;
 		}
@@ -192,16 +189,16 @@ namespace cor
 		}
 
 		// dereferences pointer to the managed object
-		Pointer operator->() const noexcept
+		T *operator->() const noexcept
 		{
 			return pointer;
 		}
-		const Elem_t operator*() const noexcept
+		const T operator*() const noexcept
 		{
 			return *get();
 		}
 
-		Elem_t& operator[](cor::usize i) const
+		T &operator[](cor::usize i) const
 		{
 			return this->get()[i];
 		}
@@ -216,7 +213,7 @@ namespace cor
 		}
 
 	private:
-		Pointer pointer;
+		T *pointer;
 		Deleter deleter;
 	};
 
@@ -228,26 +225,26 @@ namespace cor
 	}
 
 	// array type
-	template <class T, cor::EnableIf_T<cor::IsArray_T<T>&& std::extent_v<T> == 0, bool> = true>
+	template <class T, cor::EnableIf_T<cor::IsArray_T<T> && std::extent_v<T> == 0, bool> = true>
 	constexpr UniquePtr<T> makeUnique(cor::usize size)
 	{
 		return UniquePtr<T>(mem::allocate_r_extent<T>(size));
 	}
 
 	template <class T, class D>
-	void swap(UniquePtr<T, D>& lhs, UniquePtr<T, D>& rhs) noexcept
+	void swap(UniquePtr<T, D> &lhs, UniquePtr<T, D> &rhs) noexcept
 	{
 		lhs.swap(rhs);
 	}
 
 	template <class T, class D>
-	bool operator==(const UniquePtr<T, D>& ptr, nullType) noexcept
+	bool operator==(const UniquePtr<T, D> &ptr, nullType) noexcept
 	{
 		return !ptr;
 	}
 
 	template <class T, class D>
-	bool operator!=(const UniquePtr<T, D>& ptr, nullType) noexcept
+	bool operator!=(const UniquePtr<T, D> &ptr, nullType) noexcept
 	{
 		return (bool)ptr;
 	}

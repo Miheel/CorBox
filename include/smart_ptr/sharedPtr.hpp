@@ -1,11 +1,9 @@
 #ifndef SHAREDPTR_HPP
 #define SHAREDPTR_HPP
 
-#include <memory>
-#include <utility>
 #include "utility.hpp"
 #include "memory.hpp"
-#include "type_traits.hpp"
+#include "allocator.hpp"
 #include "types.hpp"
 
 namespace cor
@@ -53,15 +51,12 @@ namespace cor
 	{
 	public:
 		using Elem_t = std::remove_extent_t<T> /*cor::RemoveExtent_T<T>*/;
-		using Elem_T_ptr = Elem_t *;
-		using Elem_t_ref = Elem_t &;
-		using C_block_ptr = Control_block<Elem_t> *;
 
 	private:
-		Elem_T_ptr pointer = nullptr;
-		C_block_ptr c_block = nullptr;
+		Elem_t *pointer = nullptr;
+		Control_block<Elem_t> *c_block = nullptr;
 
-		C_block_ptr GetCblock() { return c_block; }
+		Control_block<Elem_t> *GetCblock() { return c_block; }
 
 		void freemem()
 		{
@@ -149,23 +144,23 @@ namespace cor
 		}
 
 		// Observers
-		Elem_T_ptr get() const noexcept
+		Elem_t *get() const noexcept
 		{
 			return pointer;
 		}
 
 		// dereferences pointer to the managed object
-		Elem_T_ptr operator->() const noexcept
+		Elem_t *operator->() const noexcept
 		{
 			return get();
 		}
-		Elem_t_ref operator*() const noexcept
+		Elem_t &operator*() const noexcept
 		{
 			return *get();
 		}
 
 		// Array version, unique_ptr<T[]>
-		Elem_t_ref operator[](cor::usize i) const
+		Elem_t &operator[](cor::usize i) const
 		{
 			return this->get()[i];
 		}
@@ -208,7 +203,7 @@ namespace cor
 		void *storage = mem::allocateRaw<mem::align_of<SharedPtr<T>>>(sizeof(SharedPtr<T>) + sizeof(T));
 		// void* storage = operator new(sizeof(SharedPtr<T>) + sizeof(T));
 		// return SharedPtr<T>(::new (storage) T(std::forward<Args>(args)...));
-		return SharedPtr<T>(mem::allocatePlace<T>(storage, args...));
+		return SharedPtr<T>(mem::constructInPlace<T>(storage, args...));
 	}
 
 	// template< class T >
