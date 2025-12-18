@@ -5,6 +5,5 @@ namespace cor
 {
 	using nullType = decltype(nullptr);
 	typedef unsigned long long usize;
-
 }
 #endif // !TYPES_HPP

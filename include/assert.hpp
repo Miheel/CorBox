@@ -1,7 +1,9 @@
 #ifndef ASSERT_HPP
 #define ASSERT_HPP
+
+#include <cstdlib>
 #include <cstdio>
-#include <stdlib.h>
+
 void assertCall(const char *file, unsigned int line, const char *func, const char *expr);
 
 #ifdef NDEBUG

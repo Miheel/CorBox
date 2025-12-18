@@ -1,15 +1,15 @@
 #ifndef HASH_HPP
 #define HASH_HPP
+
 #include "type_traits.hpp"
 
 namespace cor
 {
-	usize hash_FNV_1a(const unsigned char* first, usize count);
+	usize hash_FNV_1a(const unsigned char *first, usize count);
 
 	template <typename T>
 	usize hash_funk(T key)
 	{
-
 		return hash_FNV_1a(&reinterpret_cast<const unsigned char &>(key), sizeof(T));
 	}
 

@@ -1,8 +1,8 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
-#include <initializer_list>
 #include "type_traits.hpp"
+#include "types.hpp"
 
 namespace cor
 {
