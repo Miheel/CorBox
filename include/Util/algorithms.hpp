@@ -1,23 +1,24 @@
 #ifndef ALGORITHMS_HPP
 #define ALGORITHMS_HPP
 
-#include <initializer_list>
+#include "types.hpp"
 #include <algorithm>
-#include "range.hpp"
+#include <initializer_list>
+#include <range.hpp>
 
 namespace cor
 {
 
 	template <class T>
-	constexpr const T& max_of(const T& a, const T& b)
+	constexpr const T &max_of(const T &a, const T &b)
 	{
 		return a < b ? b : a;
 	}
 
 	template <class T>
-	constexpr const T& max_of(std::initializer_list<T> ilist)
+	constexpr const T &max_of(std::initializer_list<T> ilist)
 	{
-		//fix max element
+		// fix max element
 		return *std::max_element(ilist.begin(), ilist.end());
 	}
 
@@ -32,16 +33,16 @@ namespace cor
 	}
 
 	template <typename T>
-	bool cycleDetect(const T list)
+	bool cycleDetect(const T &list)
 	{
 
-		if (list->begin() == list->end())
+		if (list.begin() == list.end())
 		{
 			return false;
 		}
 
-		auto tortoise = list->begin();
-		auto hare = list->begin()->next;
+		auto tortoise = list.begin();
+		auto hare = list.begin()->next;
 
 		while (hare != tortoise && hare != nullptr)
 		{
@@ -68,9 +69,14 @@ namespace cor
 		return *slice.end();
 	}
 
-	usize strlen(const char *str);
+	cor::usize strlen(const char *str);
 
 	int strcmp(const char *lhs, const char *rhs);
+
+	int ctoi(char chr);
+	char itoc(int i);
+	int alphatoint(char chr);
+	char inttoalpha(int i);
 
 } // !namespace cor
 
