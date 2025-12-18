@@ -1,18 +1,17 @@
 #ifndef MEMORY_HPP
 #define MEMORY_HPP
 
-#include <new>
-
-#include "utility.hpp"
 #include "algorithms.hpp"
 #include "type_traits.hpp"
 #include "types.hpp"
+#include "utility.hpp"
+#include <limits>
+#include <new>
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
 #include <crtdbg.h>
-#include <iostream>
+#include <exception>
 #define DBG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
 
 // Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
@@ -33,6 +32,8 @@ namespace cor::mem
 	template <typename T>
 	T *allocateArr(usize size)
 	{
+		if (size > std::numeric_limits<std::size_t>::max() / sizeof(T))
+			throw std::bad_array_new_length();
 		return size > 0 ? DBG_NEW T[size]{} : DBG_NEW T[size];
 	}
 
@@ -74,13 +75,13 @@ namespace cor::mem
 	}
 
 	template <typename T, typename Place, typename... Args>
-	T *allocatePlace(Place *place, Args &&...args)
+	T *constructInPlace(Place *place, Args &&...args)
 	{
 		return ::new (place) T(cor::forward<Args>(args)...);
 	}
 
 	template <typename T, typename Place>
-	T *allocatePlaceDefault(Place *place)
+	T *defaultConstructInPlace(Place *place)
 	{
 		return ::new (place) T();
 	}
@@ -111,90 +112,6 @@ namespace cor::mem
 
 	template <class T>
 	inline constexpr usize align_of = max_of(alignof(T), static_cast<usize>(DEFAULT_ALIGNMENT));
-
-	template <class T>
-	struct Allocator
-	{
-		using value_type = T;
-		using pointer = T *;
-		using const_pointer = const T *;
-		using reference = T &;
-		using const_reference = const T &;
-		using size_type = usize;
-		using difference_type = std::ptrdiff_t;
-
-		Allocator() = default;
-		constexpr Allocator(const Allocator &other) noexcept = default;
-		template <class Other>
-		constexpr Allocator(const Allocator<Other> &other) noexcept {}
-
-		[[nodiscard]] pointer allocate(size_type n)
-		{
-			return static_cast<pointer>(allocateRaw<align_of<value_type>>(n * sizeof(T)));
-		}
-
-		void deallocate(pointer p)
-		{
-			deallocateRaw<align_of<pointer>>(p);
-		}
-
-		void construct(pointer p, const_reference val)
-		{
-			allocatePlace<T>(p, val);
-		}
-
-		void constructN(pointer p, size_type n)
-		{
-			for (usize i = 0; i < n; i++)
-			{
-				allocatePlaceDefault<T>(p + i);
-			}
-		}
-
-		[[nodiscard]] pointer create(size_type n, const_reference val)
-		{
-			auto tmp_ptr = allocate(n);
-			construct(tmp_ptr, val);
-			return tmp_ptr;
-		}
-
-		[[nodiscard]] pointer createN(size_type n)
-		{
-			auto tmp_ptr = allocate(n);
-			constructN(tmp_ptr, n);
-			return tmp_ptr;
-		}
-
-		void destroy(pointer p)
-		{
-			p->~T();
-		}
-
-		~Allocator() = default;
-	};
-
-	template <class T>
-	struct Deleter
-	{
-		constexpr Deleter() noexcept = default;
-
-		constexpr void operator()(T *ptr) const
-		{
-			deallocate(ptr);
-		}
-	};
-
-	template <class T>
-	struct Deleter<T[]>
-	{
-		constexpr Deleter() noexcept = default;
-
-		template <class U>
-		constexpr void operator()(U *ptr) const
-		{
-			deallocateArr(ptr);
-		}
-	};
 
 	template <typename InputIt, typename OutputIt>
 	void memCopy(InputIt first, InputIt last, OutputIt d_first)
