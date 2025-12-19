@@ -1,10 +1,9 @@
 #ifndef STATIC_ARRAY_HPP
 #define STATIC_ARRAY_HPP
 
-#include "types.hpp"
-#include "iter.hpp"
 #include "utility.hpp"
 #include "memory.hpp"
+#include "types.hpp"
 #include "assert.hpp"
 
 namespace cor
@@ -20,6 +19,30 @@ namespace cor
 		{
 			assert(list.size() == _size);
 			cor::mem::memCopy(list.begin(), list.end(), elems);
+		}
+
+		Static_Array(const Static_Array &arr)
+		{
+			assert(arr.size() == _size);
+			cor::mem::memCopy(arr.begin(), arr.end(), elems);
+		}
+
+		Static_Array(Static_Array &&arr)
+		{
+			assert(arr.size() == _size);
+			this->swap(arr);
+		}
+
+		constexpr Static_Array &operator=(const Static_Array &rhs)
+		{ // copy assign
+			auto temp(rhs);
+			this->swap(temp);
+			return *this;
+		}
+		constexpr Static_Array &operator=(Static_Array &&rhs) noexcept
+		{ // move assign
+			this->swap(rhs);
+			return *this;
 		}
 
 		// elem access
@@ -49,7 +72,7 @@ namespace cor
 		// operations
 		void fill(const T &val)
 		{
-			for (usize i = 0; i < _size; i++)
+			for (cor::usize i = 0; i < _size; i++)
 			{
 				elems[i] = val;
 			}
