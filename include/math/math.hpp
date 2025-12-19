@@ -3,8 +3,10 @@
 
 #include <map>
 #include <vector>
-#include <algorithm>
+#include <string>
 #include "types.hpp"
+#include "utility.hpp"
+#include "algorithms.hpp"
 
 namespace cor
 {
@@ -15,24 +17,33 @@ namespace cor
 		return (value < 0) ? -value : value;
 	}
 
-	constexpr int sign(long long num);
+	constexpr int sign(long long num)
+	{
+		return num < 0 ? -1 : 1;
+	}
 
-	usize pow(usize base, usize exponent);
+	float pow(float base, usize exponent);
+
+	double sqrt(double num);
+
+	std::vector<usize> factorization(usize n);
 
 	std::map<usize, usize> primefactorization(usize n);
 
 	usize phiFunk(usize n);
 
+	usize phi(usize n);
+
 	template <class T, class... Args>
 	usize lcm(const T num1, const T num2, Args... nums)
 	{
-		std::vector<std::map<usize, usize>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
+		std::vector<std::map<usize, usize>> primeFactorVec = { primefactorization(num2), primefactorization(nums)... };
 		auto newFactors = primefactorization(num1);
 		usize product = 1;
-		for (auto &map : primeFactorVec)
+		for (auto& map : primeFactorVec)
 		{
 
-			for (auto &e : map)
+			for (auto& e : map)
 			{
 				if (newFactors.find(e.first) != newFactors.end())
 				{
@@ -44,11 +55,11 @@ namespace cor
 				}
 				else
 				{
-					newFactors.insert({e.first, e.second});
+					newFactors.insert({ e.first, e.second });
 				}
 			}
 		}
-		for (auto &e : newFactors)
+		for (auto& e : newFactors)
 		{
 			product *= cor::pow(e.first, e.second);
 		}
@@ -56,20 +67,15 @@ namespace cor
 		return product;
 	}
 
-	// usize gcd(const int n1, const int n2) {
-	//
-	//	if (n2 == 0)
-	//		return n1;
-	//
-	//	gcd(n2, n1 % n2);
-	// }
-	//
-	// usize egcd(const int n1, const int n2) {
-	//
-	//	if (n2 == 0)
-	//		return n1;
-	// }
+	usize gcd(int n1, int n2);
 
+	std::tuple<int, int, int> egcd(int n1, int n2);
+
+	usize toDeci(std::string nr, int from_b);
+
+	std::string fromDeci(int nr, int to_b);
+
+	std::string baseconvert(std::string nr, int from_b, int to_b);
 } // !cor::
 
 #endif // !MATH_HPP
