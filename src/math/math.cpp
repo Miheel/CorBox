@@ -224,3 +224,13 @@ std::string cor::baseconvert(std::string nr, int from_b, int to_b)
 	auto newbase = fromDeci(deci, to_b);
 	return newbase;
 }
+
+double cor::degToRad(double degrees)
+{
+	return degrees * (cor::PI / 180.0);
+}
+
+double cor::radToDeg(double radians)
+{
+	return radians * (180.0 / cor::PI);
+}

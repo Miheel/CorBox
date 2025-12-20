@@ -11,6 +11,8 @@
 namespace cor
 {
 
+	constexpr double PI = 3.14159265358979323846;
+
 	template <typename T>
 	constexpr T abs(T value)
 	{
@@ -37,13 +39,13 @@ namespace cor
 	template <class T, class... Args>
 	usize lcm(const T num1, const T num2, Args... nums)
 	{
-		std::vector<std::map<usize, usize>> primeFactorVec = { primefactorization(num2), primefactorization(nums)... };
+		std::vector<std::map<usize, usize>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
 		auto newFactors = primefactorization(num1);
 		usize product = 1;
-		for (auto& map : primeFactorVec)
+		for (auto &map : primeFactorVec)
 		{
 
-			for (auto& e : map)
+			for (auto &e : map)
 			{
 				if (newFactors.find(e.first) != newFactors.end())
 				{
@@ -55,11 +57,11 @@ namespace cor
 				}
 				else
 				{
-					newFactors.insert({ e.first, e.second });
+					newFactors.insert({e.first, e.second});
 				}
 			}
 		}
-		for (auto& e : newFactors)
+		for (auto &e : newFactors)
 		{
 			product *= cor::pow(e.first, e.second);
 		}
@@ -76,6 +78,9 @@ namespace cor
 	std::string fromDeci(int nr, int to_b);
 
 	std::string baseconvert(std::string nr, int from_b, int to_b);
+
+	double degToRad(double degrees);
+	double radToDeg(double radians);
 } // !cor::
 
 #endif // !MATH_HPP

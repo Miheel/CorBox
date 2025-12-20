@@ -21,6 +21,11 @@ namespace cor
 	template <typename T, cor::usize R>
 	using Vector = MatX<T, R, 1>;
 
+	Mat4 translationMat4(double dx, double dy, double dz);
+	Mat4 rotationMat4(double angle, double x, double y, double z);
+	Mat4 scalingMat4(double sx, double sy, double sz);
+	// transformationmatrix * vector4x1
+
 	template <typename T, cor::usize R, cor::usize C, cor::usize otherR, cor::usize otherC>
 	void CofactorExp(cor::usize colpos, MatX<T, R, C> &origmat, MatX<T, otherR, otherC> &newmat);
 
@@ -156,6 +161,15 @@ namespace cor
 				}
 			}
 			return newmat;
+		}
+
+		void identity()
+		{
+			data.fill(0);
+			for (cor::usize i = 0; i < R && i < C; i++)
+			{
+				this->operator()(i, i) = 1;
+			}
 		}
 
 		void zero()
