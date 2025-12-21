@@ -24,7 +24,7 @@ main() -> int {
   - [x] array buffer
   - [x] linked list
   - [ ] queue fifo/lifo/pq
-  - [ ] String
+  - [x] String
 - [ ] algorithms
     - [ ] sort q_sort 
     - [ ] search linear/biary/bintree/hashtabel 
@@ -33,6 +33,6 @@ main() -> int {
   - [ ] trig
   - [ ] lin alg
 - [ ] image maipulation?
-- [ ] smart ptr
-  - [ ] unique
-  - [ ] shared
+- [x] smart ptr
+  - [x] unique
+  - [x] shared
