@@ -150,6 +150,11 @@ cor::usize cor::phi(usize n)
 	return product;
 }
 
+cor::usize cor::lcm(int n1, int n2)
+{
+	return cor::abs(n1 * n2) / cor::gcd(n1, n2);
+}
+
 cor::usize cor::gcd(int n1, int n2)
 {
 	if (n1 < n2)
@@ -192,6 +197,35 @@ std::tuple<int, int, int> cor::egcd(int n1, int n2)
 	// a is gcd(n1,n2)
 	// Bézout coefficients: s0 and t0. so that n1 * s0 + n2 * t0 = a
 	return {a, s0, t0};
+}
+
+cor::usize cor::factorial(cor::usize n)
+{
+	cor::usize product = 1;
+	if (n == 0 || n == 1)
+	{
+		return product;
+	}
+	for (cor::usize i = 1; i <= n; i++)
+	{
+		product *= i;
+	}
+
+	return product;
+}
+
+cor::usize cor::semifactorial(cor::usize n)
+{
+	cor::usize product = 1;
+	if (n == 0 || n == 1)
+	{
+		return product;
+	}
+	for (cor::usize i = n; i >= 2; i -= 2)
+	{
+		product *= i;
+	}
+	return product;
 }
 
 cor::usize cor::toDeci(std::string nr, int from_b)

@@ -28,6 +28,30 @@ namespace cor
 
 	double sqrt(double num);
 
+	template <typename... Args>
+	double sum(const Args... nums)
+	{
+		return static_cast<double>((nums + ...));
+	}
+
+	template <typename... Args>
+	double product(const Args... nums)
+	{
+		return static_cast<double>((nums * ...));
+	}
+
+	template <typename InputIt, typename OP = cor::Plus<double>>
+	auto acumulate(InputIt first, InputIt last, OP const op = OP())
+	{
+		auto acc = *first;
+		first++;
+		for (; first != last; first++)
+		{
+			acc = op(acc, *first);
+		}
+		return acc;
+	}
+
 	std::vector<usize> factorization(usize n);
 
 	std::map<usize, usize> primefactorization(usize n);
@@ -37,7 +61,7 @@ namespace cor
 	usize phi(usize n);
 
 	template <class T, class... Args>
-	usize lcm(const T num1, const T num2, Args... nums)
+	usize lcm_prime(const T num1, const T num2, Args... nums)
 	{
 		std::vector<std::map<usize, usize>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
 		auto newFactors = primefactorization(num1);
@@ -69,9 +93,15 @@ namespace cor
 		return product;
 	}
 
+	usize lcm(int n1, int n2);
+
 	usize gcd(int n1, int n2);
 
 	std::tuple<int, int, int> egcd(int n1, int n2);
+
+	usize factorial(usize n);
+
+	usize semifactorial(usize n);
 
 	usize toDeci(std::string nr, int from_b);
 
@@ -80,6 +110,7 @@ namespace cor
 	std::string baseconvert(std::string nr, int from_b, int to_b);
 
 	double degToRad(double degrees);
+
 	double radToDeg(double radians);
 } // !cor::
 

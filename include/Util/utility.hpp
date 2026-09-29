@@ -65,6 +65,33 @@ namespace cor
 		return old_val;
 	}
 
+	template <class T = void>
+	struct Plus
+	{
+		T operator()(const T &a, const T &b) const
+		{
+			return a + b;
+		}
+	};
+
+	template <class T = void>
+	struct Minus
+	{
+		T operator()(const T &a, const T &b) const
+		{
+			return a - b;
+		}
+	};
+
+	template <class T = void>
+	struct Multiply
+	{
+		T operator()(const T &a, const T &b) const
+		{
+			return a * b;
+		}
+	};
+
 } // !namespace cor
 
 #endif // !UTILITY_HPP
