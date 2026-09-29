@@ -33,7 +33,7 @@ DEP_FILES = $(OBJ_FILES:$(OBJ_DIR)/%.o=$(DEP_DIR)/%.d)
 
 # Compiler and flags
 CXX = g++ 
-LANG_STD = -std=c++17
+LANG_STD = -std=c++20
 
 #warning and dependency flags
 WARNFLAGS = -Wall -Wpedantic -Werror 
