@@ -39,6 +39,7 @@ namespace cor
 			this->swap(temp);
 			return *this;
 		}
+
 		constexpr Static_Array &operator=(Static_Array &&rhs) noexcept
 		{ // move assign
 			this->swap(rhs);
@@ -77,6 +78,7 @@ namespace cor
 				elems[i] = val;
 			}
 		}
+
 		void swap(Static_Array &other)
 		{
 			cor::swap(this->elems, other.elems);

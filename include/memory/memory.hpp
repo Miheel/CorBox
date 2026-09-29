@@ -111,7 +111,7 @@ namespace cor::mem
 	}
 
 	template <class T>
-	inline constexpr usize align_of = max_of(alignof(T), static_cast<usize>(DEFAULT_ALIGNMENT));
+	inline constexpr cor::usize align_of = max_of(static_cast<cor::usize>(alignof(T)), static_cast<cor::usize>(DEFAULT_ALIGNMENT));
 
 	template <typename InputIt, typename OutputIt>
 	void memCopy(InputIt first, InputIt last, OutputIt d_first)
