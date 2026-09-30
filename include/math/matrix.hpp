@@ -28,9 +28,59 @@ namespace cor
 		cor::Vector<T, R> eigenvector;
 	};
 
+	struct pair
+	{
+		double first;
+		double second;
+	};
+
+	struct Transform
+	{
+		Mat4 transformMat;
+
+		Transform()
+		{
+			transformMat.identity();
+		}
+
+		Transform &translate(double dx, double dy, double dz)
+		{
+			transformMat = cor::translationMat4(dx, dy, dz) * transformMat;
+			return *this;
+		}
+
+		Transform &scale(double sx, double sy, double sz)
+		{
+			transformMat = cor::scalingMat4(sx, sy, sz) * transformMat;
+			return *this;
+		}
+
+		Transform &rotate(double radians, double x, double y, double z)
+		{
+			transformMat = cor::rotationMat4(radians, x, y, z) * transformMat;
+			return *this;
+		}
+
+		Transform &shear(pair shx, pair shy, pair shz)
+		{
+			transformMat = cor::shearMat4(shx, shy, shz) * transformMat;
+			return *this;
+		}
+
+		cor::Mat4 getTransformMat() const
+		{
+			return transformMat;
+		}
+	};
+
 	Mat4 translationMat4(double dx, double dy, double dz);
+	Mat4 translationMat4(const cor::Vector<double, 3> &vec);
 	Mat4 scalingMat4(double sx, double sy, double sz);
+	Mat4 scalingMat4(const cor::Vector<double, 3> &vec);
 	Mat4 rotationMat4(double radians, double x, double y, double z);
+	Mat4 rotationMat4(double radians, const cor::Vector<double, 3> &vec);
+	Mat4 shearMat4(pair shx, pair shy, pair shz);
+	Mat4 inverseMat4(const Mat4 &mat);
 	// transformationmatrix * vector4x1
 
 	template <typename T, cor::usize R, cor::usize C, cor::usize otherR, cor::usize otherC>
@@ -157,7 +207,7 @@ namespace cor
 		template <typename U, cor::usize otherR, cor::usize otherC>
 		MatX<T, R, otherC> operator*(const MatX<U, otherR, otherC> &rhs) const
 		{
-			static_assert((C == otherR) && "mat1 col must be the same a mat2 row");
+			static_assert((C == otherR) && "mat1 col # must be the same a mat2 row #");
 			MatX<T, R, otherC> result;
 
 			for (cor::usize _row = 0; _row < R; _row++)

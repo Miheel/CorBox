@@ -52,10 +52,15 @@
 
 cor::Mat4 cor::translationMat4(double dx, double dy, double dz)
 {
-    return cor::MatX<double, 4, 4>{1, 0, 0, dx,
-                                   0, 1, 0, dy,
-                                   0, 0, 1, dz,
-                                   0, 0, 0, 1};
+    return cor::Mat4{1, 0, 0, dx,
+                     0, 1, 0, dy,
+                     0, 0, 1, dz,
+                     0, 0, 0, 1};
+}
+
+cor::Mat4 cor::translationMat4(const cor::Vector<double, 3> &vec)
+{
+    return cor::translationMat4(vec[0], vec[1], vec[2]);
 }
 
 cor::Mat4 cor::scalingMat4(double sx, double sy, double sz)
@@ -64,6 +69,11 @@ cor::Mat4 cor::scalingMat4(double sx, double sy, double sz)
                      0, sy, 0, 0,
                      0, 0, sz, 0,
                      0, 0, 0, 1};
+}
+
+cor::Mat4 cor::scalingMat4(const cor::Vector<double, 3> &vec)
+{
+    return cor::scalingMat4(vec[0], vec[1], vec[2]);
 }
 
 /*** Rodrigues' rotation formula
@@ -88,4 +98,23 @@ cor::Mat4 cor::rotationMat4(double radians, double x, double y, double z)
                      t * x * y + s * z, t * y * y + c, t * y * z - s * x, 0,
                      t * x * z - s * y, t * y * z + s * x, t * z * z + c, 0,
                      0, 0, 0, 1};
+}
+
+cor::Mat4 cor::rotationMat4(double radians, const cor::Vector<double, 3> &vec)
+{
+    return cor::rotationMat4(radians, vec[0], vec[1], vec[2]);
+}
+
+cor::Mat4 cor::shearMat4(pair shx, pair shy, pair shz)
+{
+    return cor::Mat4{1, shx.first, shx.second, 0,
+                     shy.first, 1, shy.second, 0,
+                     shz.first, shz.second, 1, 0,
+                     0, 0, 0, 1};
+}
+
+cor::Mat4 cor::inverseMat4(const Mat4 &mat)
+{
+
+    return Mat4();
 }
