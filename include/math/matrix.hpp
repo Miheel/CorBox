@@ -11,109 +11,6 @@
 namespace cor
 {
 	template <typename T, cor::usize R, cor::usize C>
-	class MatX;
-
-	using Mat2 = MatX<double, 2, 2>;
-	using Mat3 = MatX<double, 3, 3>;
-	using Mat4 = MatX<double, 4, 4>;
-	template <typename T, cor::usize C>
-	using RowVec = MatX<T, 1, C>;
-	template <typename T, cor::usize R>
-	using Vector = MatX<T, R, 1>;
-
-	template <typename T, cor::usize R>
-	struct EigenResult
-	{
-		double eigenvalue;
-		cor::Vector<T, R> eigenvector;
-	};
-
-	struct pair
-	{
-		double first;
-		double second;
-	};
-
-	struct Transform
-	{
-		Mat4 transformMat;
-
-		Transform()
-		{
-			transformMat.identity();
-		}
-
-		Transform &translate(double dx, double dy, double dz)
-		{
-			transformMat = cor::translationMat4(dx, dy, dz) * transformMat;
-			return *this;
-		}
-
-		Transform &scale(double sx, double sy, double sz)
-		{
-			transformMat = cor::scalingMat4(sx, sy, sz) * transformMat;
-			return *this;
-		}
-
-		Transform &rotate(double radians, double x, double y, double z)
-		{
-			transformMat = cor::rotationMat4(radians, x, y, z) * transformMat;
-			return *this;
-		}
-
-		Transform &shear(pair shx, pair shy, pair shz)
-		{
-			transformMat = cor::shearMat4(shx, shy, shz) * transformMat;
-			return *this;
-		}
-
-		cor::Mat4 getTransformMat() const
-		{
-			return transformMat;
-		}
-	};
-
-	Mat4 translationMat4(double dx, double dy, double dz);
-	Mat4 translationMat4(const cor::Vector<double, 3> &vec);
-	Mat4 scalingMat4(double sx, double sy, double sz);
-	Mat4 scalingMat4(const cor::Vector<double, 3> &vec);
-	Mat4 rotationMat4(double radians, double x, double y, double z);
-	Mat4 rotationMat4(double radians, const cor::Vector<double, 3> &vec);
-	Mat4 shearMat4(pair shx, pair shy, pair shz);
-	Mat4 inverseMat4(const Mat4 &mat);
-	// transformationmatrix * vector4x1
-
-	template <typename T, cor::usize R, cor::usize C, cor::usize otherR, cor::usize otherC>
-	void CofactorExp(cor::usize colpos, const MatX<T, R, C> &origmat, MatX<T, otherR, otherC> &newmat);
-
-	template <typename T, cor::usize R>
-	bool residual(const cor::Vector<T, R> &vec);
-
-	template <typename T, cor::usize R, cor::usize C>
-	T det(const MatX<T, R, C> &mat);
-
-	template <typename T, cor::usize R, cor::usize C>
-	double EuclidVecNorm(const MatX<T, R, C> &vec);
-
-	template <typename T, cor::usize R, cor::usize C>
-	EigenResult<T, R> eigen(const MatX<T, R, C> &mat);
-
-	template <typename T, cor::usize R, cor::usize C>
-	MatX<T, R, C> operator*(const T scalar, const MatX<T, R, C> &mat);
-
-	template <typename T, cor::usize R, cor::usize C>
-	bool operator==(const MatX<T, R, C> &lhs, const MatX<T, R, C> &rhs);
-
-	template <typename T, cor::usize R, cor::usize C>
-	bool operator!=(const MatX<T, R, C> &lhs, const MatX<T, R, C> &rhs);
-
-	template <typename T, cor::usize C>
-	RowVec<T, C> operator/(const RowVec<T, C> &vec, double scalar);
-
-	template <typename T, cor::usize R>
-	Vector<T, R> operator/(const Vector<T, R> &vec, double scalar);
-
-	template <typename T, cor::usize R, cor::usize C>
 	class MatX
 	{
 
@@ -156,6 +53,9 @@ namespace cor
 
 		constexpr cor::usize rows() const { return R; }
 		constexpr cor::usize cols() const { return C; }
+		constexpr cor::usize size() const { return data.size(); }
+		constexpr bool empty() const { return data.empty(); }
+		constexpr bool isSquare() const { return R == C; }
 
 		MatX &operator=(const MatX &rhs)
 		{
@@ -194,16 +94,6 @@ namespace cor
 			return result;
 		}
 
-		MatX operator*(T scalar) const
-		{
-			MatX result;
-			for (cor::usize i = 0; i < R * C; i++)
-			{
-				result[i] = data[i] * scalar;
-			}
-			return result;
-		}
-
 		template <typename U, cor::usize otherR, cor::usize otherC>
 		MatX<T, R, otherC> operator*(const MatX<U, otherR, otherC> &rhs) const
 		{
@@ -227,12 +117,92 @@ namespace cor
 			return result;
 		}
 
+		MatX operator*(T scalar) const
+		{
+			MatX result;
+			for (cor::usize i = 0; i < R * C; i++)
+			{
+				result[i] = data[i] * scalar;
+			}
+			return result;
+		}
+
+		MatX operator/(T scalar) const
+		{
+			MatX result;
+			for (cor::usize i = 0; i < R * C; i++)
+			{
+				result[i] = data[i] / scalar;
+			}
+			return result;
+		}
+
+		bool operator==(const MatX &rhs) const
+		{
+			for (cor::usize i = 0; i < R * C; i++)
+			{
+				if (data[i] != rhs.data[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		bool operator!=(const MatX &rhs) const
+		{
+			return !(*this == rhs);
+		}
+
+		MatX<T, R - 1, C - 1> CofactorExp(cor::usize colpos)
+		{
+			MatX<T, R - 1, C - 1> newmat;
+			cor::usize j = 0;
+			for (cor::usize row = 1; row < R; row++)
+			{
+				for (cor::usize col = 0; col < C; col++)
+				{
+					if (col != colpos)
+					{
+						newmat[j++] = (*this)(row, col);
+					}
+				}
+			}
+			return newmat;
+		}
+
 		// determinant only works on square matricies where row == col
 		template <cor::usize origR = R, cor::usize origC = C, typename = cor::EnableIf_T<(origR == origC)>>
-		T det() const
+		T det()
 		{
 			static_assert((C == R) && "determinant only works on square matricies");
-			return cor::det(*this);
+			if constexpr (R == 2)
+			{
+				return data[0] * data[3] - data[1] * data[2];
+			}
+			if constexpr (R == 3)
+			{
+				return (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 2) +
+					   (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 0) +
+					   (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 1) -
+					   (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 0) -
+					   (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 2) -
+					   (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 1);
+			}
+			if constexpr (R > 3)
+			{
+				MatX<T, R - 1, C - 1> temp;
+				T determinant = 0;
+				int sign = 1;
+				for (cor::usize i = 0; i < R; i++)
+				{
+					auto elem = (*this)(0, i);
+					temp = CofactorExp(i);
+					determinant += sign * elem * temp.det();
+					sign = -sign;
+				}
+				return determinant;
+			}
 		}
 
 		MatX<T, C, R> transpose() const
@@ -247,6 +217,22 @@ namespace cor
 				}
 			}
 			return newmat;
+		}
+
+		bool isSymetric() const
+		{
+			return (this->transpose() == *this);
+		}
+
+		T trace() const
+		{
+			static_assert((C == R) && "trace only works on square matricies");
+			T sum;
+			for (cor::usize i = 0; i < R && i < C; i++)
+			{
+				sum += (*this)(i, i);
+			}
+			return sum;
 		}
 
 		void identity()
@@ -280,166 +266,13 @@ namespace cor
 		cor::Static_Array<T, R * C> data;
 	};
 
-	template <typename T, cor::usize R, cor::usize C, cor::usize otherR, cor::usize otherC>
-	void CofactorExp(cor::usize colpos, const MatX<T, R, C> &origmat, MatX<T, otherR, otherC> &newmat)
-	{
-		cor::usize j = 0;
-		for (cor::usize row = 1; row < R; row++)
-		{
-			for (cor::usize col = 0; col < C; col++)
-			{
-				if (col != colpos)
-				{
-					newmat[j++] = origmat(row, col);
-				}
-			}
-		}
-	}
-
-	template <typename T, cor::usize R>
-	bool residual(const cor::Vector<T, R> &vec)
-	{
-		double epsilon = 1e-9; // Define a small threshold for floating-point comparison
-		double magnitude = cor::EuclidVecNorm(vec);
-		if (magnitude < epsilon)
-			return true;
-		return false;
-	}
-
-	template <typename T, cor::usize R, cor::usize C>
-	T det(const MatX<T, R, C> &mat)
-	{
-		assert((C == R) && "determinant only works on square matricies");
-		if constexpr (R == 2)
-		{
-			return mat[0] * mat[3] - mat[1] * mat[2];
-		}
-		if constexpr (R == 3)
-		{
-			return mat(0, 0) * mat(1, 1) * mat(2, 2) +
-				   mat(0, 1) * mat(1, 2) * mat(2, 0) +
-				   mat(0, 2) * mat(1, 0) * mat(2, 1) -
-				   mat(0, 2) * mat(1, 1) * mat(2, 0) -
-				   mat(0, 1) * mat(1, 0) * mat(2, 2) -
-				   mat(0, 0) * mat(1, 2) * mat(2, 1);
-		}
-		if constexpr (R > 3)
-		{
-			MatX<T, R - 1, C - 1> temp;
-			T determinant = 0;
-			int sign = 1;
-			for (cor::usize i = 0; i < R; i++)
-			{
-				auto elem = mat(0, i);
-				CofactorExp(i, mat, temp);
-				determinant += sign * elem * det(temp);
-				sign = -sign;
-			}
-			return determinant;
-		}
-	}
-
-	template <typename T, cor::usize R, cor::usize C>
-	double EuclidVecNorm(const MatX<T, R, C> &vec)
-	{
-		double sum = 0;
-		for (cor::usize i = 0; i < R * C; i++)
-		{
-			sum += vec[i] * vec[i];
-		}
-		return std::sqrt(sum);
-	}
-
-	template <typename T, cor::usize R, cor::usize C>
-	EigenResult<T, R> eigen(const MatX<T, R, C> &mat)
-	{
-		static_assert(R == C, "Eigen decomposition only works on square matricies");
-		EigenResult<T, R> result;
-		Vector<T, R> eigenvec(T{5});						// initial guess
-		eigenvec = eigenvec / cor::EuclidVecNorm(eigenvec); // normalize
-		double eigenval = 0, norm = 0, convergence = 0;
-		double tol = 1e-9;
-		cor::usize maxIterations = 1000;
-
-		for (cor::usize i = 0; i < maxIterations; i++)
-		{
-			auto newvec = mat * eigenvec;
-			norm = cor::EuclidVecNorm(newvec);
-			// normalize the new vector to get the next eigenvector approximation
-			eigenvec = newvec / norm;
-
-			// Rayleigh quotient
-			// since eigenvec is normalized, denominator is 1
-			//			  eigenvec_T * mat * eigenvec
-			// eigenval = -----------------------------
-			//  			eigenvec_T * eigenvec <-- this is 1
-			auto recomputed = mat * eigenvec;
-			eigenval = static_cast<double>((eigenvec.transpose() * recomputed)[0]);
-
-			// calculate convergence
-			// instead of checking the eigenvalue difference abs(eigenval - prev_eigenval)
-			// check the norm of (A*v - λ*v)
-			convergence = cor::EuclidVecNorm(recomputed - (eigenval * eigenvec));
-			if (convergence < tol)
-			{
-				break;
-			}
-
-			std::cout << "Iteration " << i << ": Eigenvalue = " << eigenval << "\n";
-		}
-
-		// return the eigenvalue and eigenvector(eigenvector is normalized)
-		result.eigenvector = eigenvec;
-		result.eigenvalue = eigenval;
-		return result;
-	}
-
-	template <typename T, cor::usize R, cor::usize C>
-	MatX<T, R, C> operator*(const T scalar, const MatX<T, R, C> &mat)
-	{
-		return mat * scalar;
-	}
-
-	template <typename T, cor::usize R, cor::usize C>
-	bool operator==(const MatX<T, R, C> &lhs, const MatX<T, R, C> &rhs)
-	{
-		for (cor::usize i = 0; i < R * C; i++)
-		{
-			if (lhs[i] != rhs[i])
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	template <typename T, cor::usize R, cor::usize C>
-	bool operator!=(const MatX<T, R, C> &lhs, const MatX<T, R, C> &rhs)
-	{
-		return !(lhs == rhs);
-	}
-
+	using Mat2 = MatX<double, 2, 2>;
+	using Mat3 = MatX<double, 3, 3>;
+	using Mat4 = MatX<double, 4, 4>;
 	template <typename T, cor::usize C>
-	RowVec<T, C> operator/(const RowVec<T, C> &vec, double scalar)
-	{
-		RowVec<T, C> normvec;
-		for (cor::usize i = 0; i < C; i++)
-		{
-			normvec[i] = vec[i] / scalar;
-		}
-		return normvec;
-	}
-
+	using RowVec = MatX<T, 1, C>;
 	template <typename T, cor::usize R>
-	Vector<T, R> operator/(const Vector<T, R> &vec, double scalar)
-	{
-		Vector<T, R> normvec;
-		for (cor::usize i = 0; i < R; i++)
-		{
-			normvec[i] = vec[i] / scalar;
-		}
-		return normvec;
-	}
+	using Vector = MatX<T, R, 1>;
 
 } // namespace cor
 
