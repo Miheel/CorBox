@@ -1,7 +1,6 @@
 #ifndef SORT_HPP
 #define SORT_HPP
 
-#include <vector>
 #include <cmath>
 #include "utility.hpp"
 #include "iter.hpp"
@@ -33,7 +32,7 @@ namespace cor
 	template <class Iter>
 	void merg(Iter first, Iter mid, Iter last)
 	{
-		std::vector<int> left(first, mid), right(mid, last);
+		cor::Array<int> left(first, mid), right(mid, last);
 		auto l = left.begin();
 		auto r = right.begin();
 		int i = 0;
@@ -78,7 +77,7 @@ namespace cor
 	{
 		if (last - first > 1)
 		{
-			auto mid = std::next(first, (last - first) / 2);
+			auto mid = cor::next(first, (last - first) / 2);
 			mergsort(first, mid);
 			mergsort(mid, last);
 			merg(first, mid, last);

@@ -25,6 +25,10 @@ namespace cor
 			: buffer(source, size), currentSize(size)
 		{
 		}
+		constexpr Array(const T *first, const T *last)
+			: Array(first, last - first)
+		{
+		}
 		constexpr Array(usize size, const T &val)
 			: Array(size)
 		{
