@@ -1,10 +1,10 @@
 #include "string.hpp"
 #include "iter.hpp"
 #include "utility.hpp"
-#include <algorithms.hpp>
+#include "algorithms.hpp"
 #include <initializer_list>
-#include <range.hpp>
-#include <types.hpp>
+#include "range.hpp"
+#include "types.hpp"
 
 // CTOR
 cor::String::String(usize count, char chr)

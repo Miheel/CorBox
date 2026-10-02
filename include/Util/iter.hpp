@@ -1,12 +1,13 @@
-#include "types.hpp"
 #ifndef ITER_HPP
 #define ITER_HPP
+
+#include "types.hpp"
 
 namespace cor
 {
 
 	template <class InputIt>
-	constexpr void advance(InputIt& it, int n)
+	constexpr void advance(InputIt &it, int n)
 	{
 		it += n;
 	}
@@ -32,19 +33,19 @@ namespace cor
 	}
 
 	template <class T, usize N>
-	constexpr T* begin(T(&array)[N]) noexcept
+	constexpr T *begin(T (&array)[N]) noexcept
 	{
 		return (array);
 	}
 
 	template <class T, usize N>
-	constexpr T* end(T(&array)[N]) noexcept
+	constexpr T *end(T (&array)[N]) noexcept
 	{
 		return (array + N);
 	}
 
 	template <class T, usize N>
-	constexpr usize size(T(&array)[N]) noexcept
+	constexpr usize size(T (&array)[N]) noexcept
 	{
 		return N;
 	}

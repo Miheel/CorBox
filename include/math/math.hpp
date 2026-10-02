@@ -2,8 +2,8 @@
 #define MATH_HPP
 
 #include <map>
-#include <vector>
 #include <string>
+#include "array.hpp"
 #include "types.hpp"
 #include "utility.hpp"
 #include "algorithms.hpp"
@@ -52,20 +52,20 @@ namespace cor
 		return acc;
 	}
 
-	std::vector<usize> factorization(usize n);
+	cor::Array<cor::usize> factorization(usize n);
 
-	std::map<usize, usize> primefactorization(usize n);
+	std::map<cor::usize, cor::usize> primefactorization(usize n);
 
-	usize phiFunk(usize n);
+	cor::usize phiFunk(usize n);
 
-	usize phi(usize n);
+	cor::usize phi(usize n);
 
 	template <class T, class... Args>
-	usize lcm_prime(const T num1, const T num2, Args... nums)
+	cor::usize lcm_prime(const T num1, const T num2, Args... nums)
 	{
-		std::vector<std::map<usize, usize>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
+		cor::Array<std::map<cor::usize, cor::usize>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
 		auto newFactors = primefactorization(num1);
-		usize product = 1;
+		cor::usize product = 1;
 		for (auto &map : primeFactorVec)
 		{
 

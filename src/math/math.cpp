@@ -35,29 +35,29 @@ double cor::sqrt(double num)
 	return estimate;
 }
 
-std::vector<cor::usize> cor::factorization(usize n)
+cor::Array<cor::usize> cor::factorization(usize n)
 {
-	std::vector<usize> factor_list;
+	cor::Array<cor::usize> factor_list;
 	size_t p = std::sqrt(n);
 
 	for (size_t i = 2; i <= p; i++)
 	{
 		while (n % i == 0)
 		{
-			factor_list.push_back(i);
+			factor_list.pushBack(i);
 			n = n / i;
 		}
 	}
 	if (factor_list.empty())
 	{
-		factor_list.push_back(n);
+		factor_list.pushBack(n);
 	}
 	return factor_list;
 }
 
 std::map<cor::usize, cor::usize> cor::primefactorization(usize n)
 {
-	std::map<usize, usize> pFacMap;
+	std::map<cor::usize, cor::usize> pFacMap;
 	while (n % 2 == 0)
 	{
 		if (pFacMap.find(2) != pFacMap.end())
