@@ -65,6 +65,6 @@ cor::Mat4 cor::shearMat4(cor::pair shx, cor::pair shy, cor::pair shz)
 
 cor::Mat4 cor::inverseMat4(const cor::Mat4 &mat)
 {
-
-    return cor::Mat4();
+    // error handling for non-invertible matrix
+    return adjugate(mat) / mat.det();
 }

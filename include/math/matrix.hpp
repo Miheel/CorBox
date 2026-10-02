@@ -154,15 +154,15 @@ namespace cor
 			return !(*this == rhs);
 		}
 
-		MatX<T, R - 1, C - 1> CofactorExp(cor::usize colpos)
+		MatX<T, R - 1, C - 1> CofactorExp(cor::usize rowpos, cor::usize colpos) const
 		{
 			MatX<T, R - 1, C - 1> newmat;
 			cor::usize j = 0;
-			for (cor::usize row = 1; row < R; row++)
+			for (cor::usize row = 0; row < R; row++)
 			{
 				for (cor::usize col = 0; col < C; col++)
 				{
-					if (col != colpos)
+					if (col != colpos && row != rowpos)
 					{
 						newmat[j++] = (*this)(row, col);
 					}
@@ -173,9 +173,13 @@ namespace cor
 
 		// determinant only works on square matricies where row == col
 		template <cor::usize origR = R, cor::usize origC = C, typename = cor::EnableIf_T<(origR == origC)>>
-		T det()
+		T det() const
 		{
 			static_assert((C == R) && "determinant only works on square matricies");
+			if constexpr (R == 1)
+			{
+				return data[0];
+			}
 			if constexpr (R == 2)
 			{
 				return data[0] * data[3] - data[1] * data[2];
@@ -197,7 +201,7 @@ namespace cor
 				for (cor::usize i = 0; i < R; i++)
 				{
 					auto elem = (*this)(0, i);
-					temp = CofactorExp(i);
+					temp = CofactorExp(0, i);
 					determinant += sign * elem * temp.det();
 					sign = -sign;
 				}

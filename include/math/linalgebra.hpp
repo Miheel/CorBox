@@ -92,6 +92,33 @@ namespace cor
     }
 
     template <typename T, cor::usize R, cor::usize C>
+    cor::MatX<T, R, C> adjugate(const cor::MatX<T, R, C> &mat)
+    {
+        if constexpr (R == 1)
+        {
+            return MatX<T, R, C>({1});
+        }
+        if constexpr (R == 2)
+        {
+            return cor::MatX<T, R, C>({mat[3], -mat[1], -mat[2], mat[0]});
+        }
+        else
+        {
+            cor::MatX<T, R, C> adjugateMat;
+            for (cor::usize row = 0; row < R; row++)
+            {
+                for (cor::usize col = 0; col < C; col++)
+                {
+                    auto cofactor = mat.CofactorExp(row, col);
+                    int sign = (row + col) % 2 == 0 ? 1 : -1;
+                    adjugateMat(col, row) = sign * cofactor.det();
+                }
+            }
+            return adjugateMat;
+        }
+    }
+
+    template <typename T, cor::usize R, cor::usize C>
     double EuclidVecNorm(const MatX<T, R, C> &vec)
     {
         double sum = 0;
