@@ -2,7 +2,7 @@
 #define MATH_HPP
 
 #include <map>
-#include <string>
+#include "string.hpp"
 #include "array.hpp"
 #include "types.hpp"
 #include "utility.hpp"
@@ -103,11 +103,11 @@ namespace cor
 
 	usize semifactorial(usize n);
 
-	usize toDeci(std::string nr, int from_b);
+	usize toDeci(cor::String nr, int from_b);
 
-	std::string fromDeci(int nr, int to_b);
+	cor::String fromDeci(int nr, int to_b);
 
-	std::string baseconvert(std::string nr, int from_b, int to_b);
+	cor::String baseconvert(cor::String nr, int from_b, int to_b);
 
 	double degToRad(double degrees);
 

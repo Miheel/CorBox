@@ -7,6 +7,14 @@
 #include "types.hpp"
 
 // CTOR
+
+cor::String::String()
+	: ssize(0)
+{
+	this->aloc(0);
+	this->ptr[this->ssize] = '\0';
+}
+
 cor::String::String(usize count, char chr)
 	: ssize(count)
 {
@@ -177,14 +185,23 @@ void cor::String::pushBack(char chr)
 
 cor::String &cor::String::insert(usize index, usize count, char chr)
 {
-	String temp = "";
+	cor::String temp;
 	if (index <= this->size())
 	{
-		// for (size_t i = 0; i < length; i++)
-		//{
+		for (size_t i = 0; i <= this->size(); i++)
+		{
+			if (i == index)
+			{
+				for (size_t j = 0; j < count; j++)
+				{
+					temp.pushBack(chr);
+				}
+			}
 
-		//}
+			temp.pushBack((*this)[i]);
+		}
 	}
+	this->swap(temp);
 	return *this;
 }
 

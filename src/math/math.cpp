@@ -228,7 +228,7 @@ cor::usize cor::semifactorial(cor::usize n)
 	return product;
 }
 
-cor::usize cor::toDeci(std::string nr, int from_b)
+cor::usize cor::toDeci(cor::String nr, int from_b)
 {
 	size_t j = nr.size() - 1, sum_d = 0;
 	for (size_t i = 0; i < nr.size(); i++, j--)
@@ -238,21 +238,22 @@ cor::usize cor::toDeci(std::string nr, int from_b)
 	return sum_d;
 }
 
-std::string cor::fromDeci(int nr, int to_b)
+cor::String cor::fromDeci(int nr, int to_b)
 {
-	std::string newNr = "";
+	cor::String newNr;
 	int a = nr, b = to_b;
 	while (a > 0)
 	{
 		int q = a / b;
 		int r = a % b;
-		newNr.insert(0, 1, cor::inttoalpha(r));
+		auto chr = cor::inttoalpha(r);
+		newNr.insert(0, 1, chr);
 		a = q;
 	}
 	return newNr;
 }
 
-std::string cor::baseconvert(std::string nr, int from_b, int to_b)
+cor::String cor::baseconvert(cor::String nr, int from_b, int to_b)
 {
 	auto deci = toDeci(nr, from_b);
 	auto newbase = fromDeci(deci, to_b);

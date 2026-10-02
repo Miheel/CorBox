@@ -12,7 +12,7 @@ namespace cor
 	{
 	public:
 		// CTOR
-		String() = default;
+		String();
 		String(cor::usize count, char chr);
 		String(const char *s);
 		String(const char *s, cor::usize count);
