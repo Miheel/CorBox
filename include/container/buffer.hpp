@@ -95,6 +95,23 @@ namespace cor
 		T *end_ptr = nullptr;
 	};
 
+	template <typename T>
+	bool operator==(const cor::Buffer<T> &lhs, const cor::Buffer<T> &rhs)
+	{
+		if (lhs.size() != rhs.size())
+		{
+			return false;
+		}
+		for (size_t i = 0; i < lhs.size(); i++)
+		{
+			if (lhs[i] != rhs[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 } // !namespace cor
 
 #endif // !BUFFER_HPP

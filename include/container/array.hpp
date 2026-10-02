@@ -69,6 +69,9 @@ namespace cor
 		constexpr T *data() { return buffer.data(); }
 		constexpr const T *data() const { return buffer.data(); }
 
+		constexpr Buffer<T> &getBuffer() { return buffer; }
+		constexpr const Buffer<T> &getBuffer() const { return buffer; }
+
 		// Capacity
 		constexpr cor::usize size() const { return currentSize; }
 		constexpr bool empty() { return currentSize == 0 ? true : false; }
@@ -203,6 +206,12 @@ namespace cor
 			}
 			std::cout << "\n";
 		}
+	}
+
+	template <class T>
+	bool operator==(const cor::Array<T> &lhs, const cor::Array<T> &rhs)
+	{
+		return lhs.getBuffer() == rhs.getBuffer();
 	}
 
 } // !namespace cor
