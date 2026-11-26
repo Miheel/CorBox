@@ -1,6 +1,7 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
+#include <iostream>
 #include <initializer_list>
 #include "allocator.hpp"
 #include "range.hpp"
@@ -19,6 +20,13 @@ namespace cor
 		String(const String &other);
 		String(String &&other) noexcept;
 		String(std::initializer_list<char> ilist);
+		template <typename Iter>
+		String(Iter first, Iter last):String() {
+			for(; first != last; first++)
+			{
+				pushBack(*first);
+			}
+		}
 
 		~String();
 
@@ -58,6 +66,8 @@ namespace cor
 		void pushBack(char chr);
 		String &insert(cor::usize index, cor::usize count, char chr);
 		void resize(cor::usize newSize);
+		void resize(cor::usize newSize, char ch);
+		constexpr void reserve(cor::usize newCap);
 		void swap(String &other) noexcept;
 
 		// SLICE
@@ -77,6 +87,7 @@ namespace cor
 	bool operator!=(const cor::String &lhs, const cor::String &rhs) noexcept;
 	bool operator==(const cor::String &lhs, const char *rhs) noexcept;
 	bool operator!=(const cor::String &lhs, const char *rhs) noexcept;
+	std::ostream& operator<<(std::ostream& os, cor::String& str);
 }
 
 #endif // !STRING_HPP

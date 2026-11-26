@@ -174,13 +174,13 @@ cor::usize cor::String::max_size() const noexcept
 // MODIFIERS
 void cor::String::pushBack(char chr)
 {
-	if (this->size() == this->capacity())
+	if (ssize == cap)
 	{
-		resize(this->cap + 1);
+		reserve(cap + 1);
 	}
 
-	this->ptr[this->ssize++] = chr;
-	this->ptr[this->ssize] = '\0';
+	ptr[ssize++] = chr;
+	ptr[ssize] = '\0';
 }
 
 cor::String &cor::String::insert(usize index, usize count, char chr)
@@ -207,8 +207,35 @@ cor::String &cor::String::insert(usize index, usize count, char chr)
 
 void cor::String::resize(usize newSize)
 {
-	usize newCap = newSize <= 15 ? 15 : (((newSize) + 14) / 15) * 15;
-	auto temp = allocator.createN(newCap + 1);
+	resize(newSize, '\0');
+}
+
+void cor::String::resize(cor::usize newSize, char ch)
+{	
+	if (newSize > cap)
+	{
+		reserve(newSize);
+	}
+
+	if (newSize> ssize)
+	{	
+		for (size_t i = ssize; i < newSize; i++)
+		{
+			ptr[i] = ch;
+		}
+	}
+	ssize = newSize;
+	ptr[ssize] = '\0';
+}
+
+constexpr void cor::String::reserve(cor::usize newCap)
+{
+	if (newCap <= capacity())
+	{
+		return;
+	}
+	usize newCapacity = cor::max_of(newCap, cap ? cap * 2 : 15);
+	auto temp = allocator.createN(newCapacity + 1);
 	for (size_t i = 0; i < this->ssize; i++)
 	{
 		temp[i] = this->ptr[i];
@@ -216,7 +243,7 @@ void cor::String::resize(usize newSize)
 	temp[this->ssize] = '\0';
 	allocator.deallocate(this->ptr);
 	this->ptr = temp;
-	this->cap = newCap;
+	this->cap = newCapacity;
 }
 
 void cor::String::swap(String &other) noexcept
@@ -262,4 +289,10 @@ bool cor::operator==(const cor::String &lhs, const char *rhs) noexcept
 bool cor::operator!=(const cor::String &lhs, const char *rhs) noexcept
 {
 	return cor::strcmp(lhs.data(), rhs) != 0;
+}
+
+std::ostream& cor::operator<<(std::ostream& os, cor::String& str)
+{
+	os << str.data();
+	return os;
 }
