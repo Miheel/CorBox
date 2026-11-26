@@ -1,12 +1,12 @@
 #ifndef MATH_HPP
 #define MATH_HPP
 
-#include <map>
-#include "string.hpp"
 #include "array.hpp"
+#include "string.hpp"
 #include "types.hpp"
 #include "utility.hpp"
-#include "algorithms.hpp"
+#include <map>
+#include <tuple>
 
 namespace cor
 {
@@ -19,12 +19,30 @@ namespace cor
 		return (value < 0) ? -value : value;
 	}
 
-	constexpr int sign(long long num)
+	template <typename T>
+	constexpr int sign(T num)
 	{
 		return num < 0 ? -1 : 1;
 	}
 
-	float pow(float base, usize exponent);
+	template <typename T>
+	T pow(T base, usize exponent)
+	{
+		T product = 1;
+		if (exponent == 2)
+		{
+			product = base * base;
+		}
+		else
+		{
+			for (cor::usize i = 1; i <= exponent; i++)
+			{
+				product *= base;
+			}
+		}
+		return product;
+	}
+
 
 	double sqrt(double num);
 
@@ -63,13 +81,13 @@ namespace cor
 	template <class T, class... Args>
 	cor::usize lcm_prime(const T num1, const T num2, Args... nums)
 	{
-		cor::Array<std::map<cor::usize, cor::usize>> primeFactorVec = {primefactorization(num2), primefactorization(nums)...};
+		cor::Array<std::map<cor::usize, cor::usize>> primeFactorVec = { primefactorization(num2), primefactorization(nums)... };
 		auto newFactors = primefactorization(num1);
 		cor::usize product = 1;
-		for (auto &map : primeFactorVec)
+		for (auto& map : primeFactorVec)
 		{
 
-			for (auto &e : map)
+			for (auto& e : map)
 			{
 				if (newFactors.find(e.first) != newFactors.end())
 				{
@@ -81,11 +99,11 @@ namespace cor
 				}
 				else
 				{
-					newFactors.insert({e.first, e.second});
+					newFactors.insert({ e.first, e.second });
 				}
 			}
 		}
-		for (auto &e : newFactors)
+		for (auto& e : newFactors)
 		{
 			product *= cor::pow(e.first, e.second);
 		}
@@ -103,11 +121,11 @@ namespace cor
 
 	usize semifactorial(usize n);
 
-	usize toDeci(cor::String nr, int from_b);
+	int toDeci(cor::String nr, cor::usize from_b);
 
-	cor::String fromDeci(int nr, int to_b);
+	cor::String fromDeci(int nr, cor::usize to_b);
 
-	cor::String baseconvert(cor::String nr, int from_b, int to_b);
+	cor::String baseconvert(cor::String nr, cor::usize from_b, cor::usize to_b);
 
 	double degToRad(double degrees);
 
