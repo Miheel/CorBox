@@ -1,23 +1,14 @@
-﻿#include "math.hpp"
-#include "assert.hpp"
+﻿#include "assert.hpp"
+#include "math.hpp"
+#include <algorithms.hpp>
+#include <array.hpp>
 #include <cmath>
-
-float cor::pow(float base, cor::usize exponent)
-{
-	float product = 1;
-	if (exponent == 2)
-	{
-		product = base * base;
-	}
-	else
-	{
-		for (cor::usize i = 1; i <= exponent; i++)
-		{
-			product *= base;
-		}
-	}
-	return product;
-}
+#include <cstdlib>
+#include <map>
+#include <string.hpp>
+#include <tuple>
+#include <types.hpp>
+#include <utility.hpp>
 
 double cor::sqrt(double num)
 {
@@ -38,7 +29,7 @@ double cor::sqrt(double num)
 cor::Array<cor::usize> cor::factorization(usize n)
 {
 	cor::Array<cor::usize> factor_list;
-	size_t p = std::sqrt(n);
+	size_t p = static_cast<size_t>(std::sqrt(n));
 
 	for (size_t i = 2; i <= p; i++)
 	{
@@ -55,7 +46,7 @@ cor::Array<cor::usize> cor::factorization(usize n)
 	return factor_list;
 }
 
-std::map<cor::usize, cor::usize> cor::primefactorization(usize n)
+std::map<cor::usize, cor::usize> cor::primefactorization(cor::usize n)
 {
 	std::map<cor::usize, cor::usize> pFacMap;
 	while (n % 2 == 0)
@@ -66,12 +57,12 @@ std::map<cor::usize, cor::usize> cor::primefactorization(usize n)
 		}
 		else
 		{
-			pFacMap.insert({2, 1});
+			pFacMap.insert({ 2, 1 });
 		}
 		n = n / 2;
 	}
 
-	for (usize i = 3; i <= sqrt(n); i++)
+	for (cor::usize i = 3; i <= sqrt(n); i++)
 	{
 		while (n % i == 0)
 		{
@@ -81,7 +72,7 @@ std::map<cor::usize, cor::usize> cor::primefactorization(usize n)
 			}
 			else
 			{
-				pFacMap.insert({i, 1});
+				pFacMap.insert({ i, 1 });
 			}
 			n = n / i;
 		}
@@ -95,7 +86,7 @@ std::map<cor::usize, cor::usize> cor::primefactorization(usize n)
 		}
 		else
 		{
-			pFacMap.insert({n, 1});
+			pFacMap.insert({ n, 1 });
 		}
 	}
 	return pFacMap;
@@ -105,7 +96,7 @@ cor::usize cor::phiFunk(usize n)
 {
 	auto factors = primefactorization(n);
 	cor::usize product = 1;
-	for (auto &e : factors)
+	for (auto& e : factors)
 	{
 		product *= cor::pow(e.first, e.second - 1) * (e.first - 1);
 	}
@@ -152,7 +143,7 @@ cor::usize cor::phi(usize n)
 
 cor::usize cor::lcm(int n1, int n2)
 {
-	return cor::abs(n1 * n2) / cor::gcd(n1, n2);
+	return cor::abs(static_cast<long long>(n1) * n2) / cor::gcd(n1, n2);
 }
 
 cor::usize cor::gcd(int n1, int n2)
@@ -196,7 +187,7 @@ std::tuple<int, int, int> cor::egcd(int n1, int n2)
 	}
 	// a is gcd(n1,n2)
 	// Bézout coefficients: s0 and t0. so that n1 * s0 + n2 * t0 = a
-	return {a, s0, t0};
+	return { a, s0, t0 };
 }
 
 cor::usize cor::factorial(cor::usize n)
@@ -228,23 +219,25 @@ cor::usize cor::semifactorial(cor::usize n)
 	return product;
 }
 
-cor::usize cor::toDeci(cor::String nr, int from_b)
+int cor::toDeci(cor::String nr, cor::usize from_b)
 {
-	size_t j = nr.size() - 1, sum_d = 0;
+	size_t j = nr.size() - 1;
+	int sum_d = 0;
 	for (size_t i = 0; i < nr.size(); i++, j--)
 	{
-		sum_d += cor::alphatoint(nr[i]) * std::pow(from_b, j);
+		sum_d += cor::alphatoint(nr[i]) * static_cast<int>(std::pow(from_b, j));
 	}
 	return sum_d;
 }
 
-cor::String cor::fromDeci(int nr, int to_b)
+cor::String cor::fromDeci(int nr, cor::usize to_b)
 {
 	cor::String newNr;
-	int a = nr, b = to_b;
+	int a = nr;
+	cor::usize b = to_b;
 	while (a > 0)
 	{
-		int q = a / b;
+		int q = a / static_cast<int>(b);
 		int r = a % b;
 		auto chr = cor::inttoalpha(r);
 		newNr.insert(0, 1, chr);
@@ -253,7 +246,7 @@ cor::String cor::fromDeci(int nr, int to_b)
 	return newNr;
 }
 
-cor::String cor::baseconvert(cor::String nr, int from_b, int to_b)
+cor::String cor::baseconvert(cor::String nr, cor::usize from_b, cor::usize to_b)
 {
 	auto deci = toDeci(nr, from_b);
 	auto newbase = fromDeci(deci, to_b);

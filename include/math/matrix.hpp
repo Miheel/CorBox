@@ -1,12 +1,11 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include <cmath>
-#include <iostream>
-#include <initializer_list>
-#include "math.hpp"
 #include "static_array.hpp"
 #include "type_traits.hpp"
+#include <initializer_list>
+#include <iostream>
+#include <types.hpp>
 
 namespace cor
 {
@@ -17,7 +16,7 @@ namespace cor
 	public:
 		MatX()
 		{
-			data.fill(T{0});
+			data.fill(T{ 0 });
 		}
 
 		MatX(T initVal)
@@ -30,26 +29,26 @@ namespace cor
 			data = list;
 		}
 
-		MatX(const MatX &mat) : data(mat.data)
+		MatX(const MatX& mat) : data(mat.data)
 		{
 		}
 
-		MatX(MatX &&mat) noexcept
+		MatX(MatX&& mat) noexcept
 		{
 			this->data.swap(mat.data);
 		}
 
-		T &operator()(cor::usize rowpos, cor::usize colpos)
+		T& operator()(cor::usize rowpos, cor::usize colpos)
 		{
 			return data[rowpos * C + colpos];
 		}
-		const T &operator()(cor::usize rowpos, cor::usize colpos) const
+		const T& operator()(cor::usize rowpos, cor::usize colpos) const
 		{
 			return data[rowpos * C + colpos];
 		}
 
-		T &operator[](cor::usize pos) { return data[pos]; }
-		const T &operator[](cor::usize pos) const { return data[pos]; }
+		T& operator[](cor::usize pos) { return data[pos]; }
+		const T& operator[](cor::usize pos) const { return data[pos]; }
 
 		constexpr cor::usize rows() const { return R; }
 		constexpr cor::usize cols() const { return C; }
@@ -57,20 +56,20 @@ namespace cor
 		constexpr bool empty() const { return data.empty(); }
 		constexpr bool isSquare() const { return R == C; }
 
-		MatX &operator=(const MatX &rhs)
+		MatX& operator=(const MatX& rhs)
 		{
 			MatX temp(rhs);
 			this->data.swap(temp.data);
 			return *this;
 		}
-		MatX &operator=(MatX &&rhs) noexcept
+		MatX& operator=(MatX&& rhs) noexcept
 		{
 			this->data.swap(rhs.data);
 			return *this;
 		}
 
 		template <cor::usize otherR, cor::usize otherC>
-		MatX operator+(const MatX<T, otherR, otherC> &rhs) const
+		MatX operator+(const MatX<T, otherR, otherC>& rhs) const
 		{
 			static_assert((C == otherC && R == otherR) && "mat 1 and mat 2 must have equal # of col and row");
 			MatX result;
@@ -82,7 +81,7 @@ namespace cor
 		}
 
 		template <cor::usize otherR, cor::usize otherC>
-		MatX operator-(const MatX<T, otherR, otherC> &rhs) const
+		MatX operator-(const MatX<T, otherR, otherC>& rhs) const
 		{
 			static_assert((C == otherC && R == otherR) && "mat 1 and mat 2 must have equal # of col and row");
 
@@ -95,7 +94,7 @@ namespace cor
 		}
 
 		template <typename U, cor::usize otherR, cor::usize otherC>
-		MatX<T, R, otherC> operator*(const MatX<U, otherR, otherC> &rhs) const
+		MatX<T, R, otherC> operator*(const MatX<U, otherR, otherC>& rhs) const
 		{
 			static_assert((C == otherR) && "mat1 col # must be the same a mat2 row #");
 			MatX<T, R, otherC> result;
@@ -137,7 +136,7 @@ namespace cor
 			return result;
 		}
 
-		bool operator==(const MatX &rhs) const
+		bool operator==(const MatX& rhs) const
 		{
 			for (cor::usize i = 0; i < R * C; i++)
 			{
@@ -149,7 +148,7 @@ namespace cor
 			return true;
 		}
 
-		bool operator!=(const MatX &rhs) const
+		bool operator!=(const MatX& rhs) const
 		{
 			return !(*this == rhs);
 		}
@@ -187,11 +186,11 @@ namespace cor
 			if constexpr (R == 3)
 			{
 				return (*this)(0, 0) * (*this)(1, 1) * (*this)(2, 2) +
-					   (*this)(0, 1) * (*this)(1, 2) * (*this)(2, 0) +
-					   (*this)(0, 2) * (*this)(1, 0) * (*this)(2, 1) -
-					   (*this)(0, 2) * (*this)(1, 1) * (*this)(2, 0) -
-					   (*this)(0, 1) * (*this)(1, 0) * (*this)(2, 2) -
-					   (*this)(0, 0) * (*this)(1, 2) * (*this)(2, 1);
+					(*this)(0, 1) * (*this)(1, 2) * (*this)(2, 0) +
+					(*this)(0, 2) * (*this)(1, 0) * (*this)(2, 1) -
+					(*this)(0, 2) * (*this)(1, 1) * (*this)(2, 0) -
+					(*this)(0, 1) * (*this)(1, 0) * (*this)(2, 2) -
+					(*this)(0, 0) * (*this)(1, 2) * (*this)(2, 1);
 			}
 			if constexpr (R > 3)
 			{
@@ -231,7 +230,7 @@ namespace cor
 		T trace() const
 		{
 			static_assert((C == R) && "trace only works on square matricies");
-			T sum;
+			T sum = 0;
 			for (cor::usize i = 0; i < R && i < C; i++)
 			{
 				sum += (*this)(i, i);
@@ -241,16 +240,16 @@ namespace cor
 
 		void identity()
 		{
-			data.fill(T{0});
-			for (cor::usize i = 0; i < R && i < C; i++)
+			data.fill(T{ 0 });
+			for (cor::usize i = 0; i < R; i++)
 			{
-				this->operator()(i, i) = T{1};
+				this->operator()(i, i) = T{ 1 };
 			}
 		}
 
 		void zero()
 		{
-			data.fill(T{0});
+			data.fill(T{ 0 });
 		}
 
 		void print()
@@ -267,7 +266,7 @@ namespace cor
 		}
 
 	private:
-		cor::Static_Array<T, R * C> data;
+		cor::Static_Array<T, R* C> data;
 	};
 
 	using Mat2 = MatX<double, 2, 2>;

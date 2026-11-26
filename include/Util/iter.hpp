@@ -7,22 +7,22 @@ namespace cor
 {
 
 	template <class InputIt>
-	constexpr void advance(InputIt &it, int n)
+	constexpr void advance(InputIt& it, int n)
 	{
 		it += n;
 	}
 
 	template <class InputIt>
-	constexpr InputIt next(InputIt it, int n = 1)
+	constexpr InputIt next(InputIt it, cor::usize n = 1)
 	{
-		advance(it, n);
+		advance(it, static_cast<int>(n));
 		return it;
 	}
 
 	template <class InputIt>
-	constexpr InputIt prev(InputIt it, int n = 1)
+	constexpr InputIt prev(InputIt it, cor::usize n = 1)
 	{
-		advance(it, -n);
+		advance(it, -static_cast<int>(n));
 		return it;
 	}
 
@@ -33,19 +33,19 @@ namespace cor
 	}
 
 	template <class T, usize N>
-	constexpr T *begin(T (&array)[N]) noexcept
+	constexpr T* begin(T(&array)[N]) noexcept
 	{
 		return (array);
 	}
 
 	template <class T, usize N>
-	constexpr T *end(T (&array)[N]) noexcept
+	constexpr T* end(T(&array)[N]) noexcept
 	{
 		return (array + N);
 	}
 
 	template <class T, usize N>
-	constexpr usize size(T (&array)[N]) noexcept
+	constexpr usize size(T(&array)[N]) noexcept
 	{
 		return N;
 	}
