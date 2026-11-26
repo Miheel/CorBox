@@ -5,7 +5,7 @@
 #include <cstdio>
 
 void assertCall(const char *file, unsigned int line, const char *func, const char *expr);
-
+void where(const char *file, unsigned int line, const char *func);
 #ifdef NDEBUG
 #define assert(condition) ((void)0)
 #else
